@@ -12,7 +12,7 @@ slots_1hour_dict ={ #slot da un'ora
     "16:00" : 5,
     "17:00" : 6,
     "18:00" : 7,
-    "19:00" : 8,
+    "19:00" : 8
 }
 slots_130_hour_dict = { # slot da un'ora e mezza
     "09:00" : 0,
@@ -20,7 +20,7 @@ slots_130_hour_dict = { # slot da un'ora e mezza
     "14:00" : 2,
     "15:30" : 3,
     "17:00" : 4,
-    "18:30" : 5,
+    "18:30" : 5
 }
 slots_half_hour = { # tutti slot da un'ora
     "09:00" : 0,
@@ -29,20 +29,18 @@ slots_half_hour = { # tutti slot da un'ora
     "10:30" : 3,
     "11:00" : 4,
     "11:30" : 5,
-    "12:00" : 6,
-    "14:00" : 7,
-    "14:30" : 8,
-    "15:00" : 9,
-    "15:30" : 10,
-    "16:00" : 11,
-    "16:30" : 12,
-    "17:00" : 13,
-    "17:30" : 14,
-    "18:00" : 15,
-    "18:30" : 16,
-    "19:00" : 17,
-    "19:30" : 18,
-    "20:00" : 19,
+    "14:00" : 6,
+    "14:30" : 7,
+    "15:00" : 8,
+    "15:30" : 9,
+    "16:00" : 10,
+    "16:30" : 11,
+    "17:00" : 12,
+    "17:30" : 13,
+    "18:00" : 14,
+    "18:30" : 15,
+    "19:00" : 16,
+    "19:30" : 17
 }
 # stampa un array a 3 dimensioni, typeslot mi serve soltanto per capire lo studente esatto nel foglio excel
 def print_3d_array(array,typeslot):
@@ -135,7 +133,6 @@ def check_dissatisfied(array, slots, nstudents, ntraining, decision_variables):
     
         if sum != ntraining[i]:
             array[i,:,:] = 0
-            print(saves)
             
         
 # per aprire il workbook 
@@ -348,7 +345,6 @@ for v in problem1.variables():
             Campo1[int(v.name[2:3]) - 1,int(v.name[4:5]) - 1,int(v.name[-1]) - 1] = 1
 # 90
 for v in problem130.variables():
-    print(v)
     if v.varValue == 1.0:
         if v.name[3] != ',': # x_32,4,9
             Campo130[int(v.name[2:4]) - 1,int(v.name[5:6]) - 1,int(v.name[-1]) - 1] = 1
@@ -385,12 +381,43 @@ s15 = number_students130 / 4
 check_dissatisfied(Campo1, 9, number_students1, number_training1, students_variables1) 
 check_dissatisfied(Campo130, 6, number_students130, number_training130, students_variables130)
 
-print_comparison_3d_array(Allievo1,Campo1,number_training1,sixty)
-print_comparison_3d_array(Allievo130,Campo130,number_training130,ninety)
+#print_comparison_3d_array(Allievo1,Campo1,number_training1,sixty)
+#print_comparison_3d_array(Allievo130,Campo130,number_training130,ninety)
 
 print ("valore ottimo per gli studenti da un'ora= ", problem1.objective.value())
 print ("valore ottimo per gli studenti da un'ora e mezza = ", problem130.objective.value())
 
 print(s1,s15)
 
+Campo_1final = np.zeros((number_students1,6,18),dtype = int)
+Campo_130final = np.zeros((number_students130,6,18),dtype = int)
+
+res = np.zeros((number_students_total,6,18),dtype = int)
+
+for i in range(number_students1):
+    for j in range(6):
+        for k in range(9):
+            if Campo1[i,j,k] == 1:
+                keys = [y for y, v in slots_1hour_dict.items() if v == k]
+                Campo_1final[i,j,slots_half_hour[keys[0]] : slots_half_hour[keys[0]] + 2] = 1
+
+for i in range(number_students130):
+    for j in range(6):
+        for k in range(6):
+            if Campo130[i,j,k] == 1:
+                keys = [y for y, v in slots_130_hour_dict.items() if v == k]
+                Campo_130final[i,j,slots_half_hour[keys[0]] : slots_half_hour[keys[0]] + 3] = 1
+
+#print_3d_array(Campo_1final,sixty)
+#print ("|" * 50)
+#print_3d_array(Campo_130final,ninety)
+
 final_problem = LpProblem("resfinale", sense=LpMaximize)
+
+final_xvariables = [LpVariable(f"{x}") for x in problem1.variables() if x.varValue == 1.0]
+final_yvariables = [LpVariable(f"{y}") for y in problem130.variables() if y.varValue == 1.0]
+
+print(final_xvariables)
+print(f"lunghezza x {len(final_xvariables)}")
+print(final_yvariables)
+print(f"lunghezza y {len(final_yvariables)}")
