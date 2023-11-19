@@ -1,3 +1,4 @@
+from math import ceil
 import openpyxl
 import numpy as np
 from pulp import *
@@ -184,6 +185,7 @@ Campo130 = np.zeros((number_students_total,6,6),dtype = int)
 cont1 = 0
 cont130 = 0
 switch = True
+dio = []
 # assegnamo agli array 3d allievo1 e 130 le diponibilità
 for i,row in enumerate (active_worksheet.iter_rows(min_row=3, max_col=active_worksheet.max_column, max_row=active_worksheet.max_row)):
     # adding to contentRow all the values of the tuple that we get with iter_rows
@@ -194,9 +196,11 @@ for i,row in enumerate (active_worksheet.iter_rows(min_row=3, max_col=active_wor
     if "1" in contentRow[2] or "2" in contentRow[2] or "3" in contentRow[2] or "4" in contentRow[2]:
         string = contentRow[2]
         if contentRow[3] == 90:
+                dio.append(3)
                 number_training130[cont130] = int(string[0:1])     
-        else:
+        else: #60
                 number_training1[cont1] = int(string[0:1])
+                dio.append(2)
     # lettura degli slot 
     for j,x in enumerate(contentRow[4:10]):
         if contentRow[3] == 90:
@@ -375,8 +379,8 @@ for day in range(6):
 #print_3d_array(Campo1,sixty)
 #print(problem1)
 #print(problem130)
-s1 = number_students1 / 4
-s15 = number_students130 / 4
+s1 = ceil(number_students1 / 4)
+s15 = ceil(number_students130 / 4)
 
 check_dissatisfied(Campo1, 9, number_students1, number_training1, students_variables1) 
 check_dissatisfied(Campo130, 6, number_students130, number_training130, students_variables130)
@@ -394,12 +398,19 @@ Campo_130final = np.zeros((number_students130,6,18),dtype = int)
 
 res = np.zeros((number_students_total,6,18),dtype = int)
 
+decision_variables_students_final_1 = []
+decision_variables_students_final_130 = []
+
+new_sixty = []
+
 for i in range(number_students1):
     for j in range(6):
         for k in range(9):
-            if Campo1[i,j,k] == 1:
+            if Campo1[i,j,k] == 1: 
                 keys = [y for y, v in slots_1hour_dict.items() if v == k]
                 Campo_1final[i,j,slots_half_hour[keys[0]] : slots_half_hour[keys[0]] + 2] = 1
+                decision_variables_students_final_1.append(f"x_{i + 1},{j + 1},{slots_half_hour[keys[0]] +1}")
+                decision_variables_students_final_1.append(f"x_{i + 1},{j + 1},{slots_half_hour[keys[0]] + 2}")
 
 for i in range(number_students130):
     for j in range(6):
@@ -407,17 +418,117 @@ for i in range(number_students130):
             if Campo130[i,j,k] == 1:
                 keys = [y for y, v in slots_130_hour_dict.items() if v == k]
                 Campo_130final[i,j,slots_half_hour[keys[0]] : slots_half_hour[keys[0]] + 3] = 1
+                decision_variables_students_final_130.append(f"x_{i +1},{j + 1},{slots_half_hour[keys[0]] + 1}")
+                decision_variables_students_final_130.append(f"x_{i +1},{j + 1},{slots_half_hour[keys[0]] + 2}")
+                decision_variables_students_final_130.append(f"x_{i+ 1},{j+ 1},{slots_half_hour[keys[0]] + 3}")
+
+#print(decision_variables_students_final_1)
+# in questi for vado a modificare sixty e ninety
+# perchè è possibile che ci sia qualche studente non soddisfatto e quindi aggiornamo
+# nella posizione esatta il fatto che non ci sia più
+porco = 0
+o = 0
+for s,i in enumerate(sixty):
+    if  i == 1:
+        porco = 0
+        for j in range(6):
+            for k in range(18): 
+                if Campo_1final[o,j,k] == 0:
+                    porco += 1
+
+        if porco == 108:
+            sixty[s] = 0
+        o += 1
+
+porco = 0
+o = 0
+for s,i in enumerate(ninety):
+    if  i == 1:
+        porco = 0
+        for j in range(6):
+            for k in range(18): 
+                if Campo_130final[o,j,k] == 0:
+                    porco += 1
+
+        if porco == 108:
+            sixty[s] = 0
+        o += 1
+
+cont = 0
+end1 = []
+for s,i in enumerate(sixty):
+    if i == 1 :
+        if cont == len(decision_variables_students_final_1):
+                break
+        temp = decision_variables_students_final_1[cont].rsplit(",")
+        stud = (temp[0])[2:]
+        
+        st = "x_" + str(f"{s + 1},{temp[1]},{temp[2]}")
+        end1.append(st)
+        cont += 1
+        
+        while stud == ((decision_variables_students_final_1[cont].rsplit(","))[0])[2:] :
+            
+            temp = decision_variables_students_final_1[cont].rsplit(",")
+            st = "x_" + str(f"{s + 1},{temp[1]},{temp[2]}")
+            end1.append(st)
+            cont += 1
+            if cont == len(decision_variables_students_final_1):
+                break
+
+cont = 0
+end130 = []
+for s,i in enumerate(ninety):
+    if i == 1 :
+        if cont == len(decision_variables_students_final_130):
+                break
+        temp = decision_variables_students_final_130[cont].rsplit(",")
+        stud = (temp[0])[2:]
+        
+        st = "x_" + str(f"{s + 1},{temp[1]},{temp[2]}")
+        end130.append(st)
+        cont += 1
+        
+        while stud == ((decision_variables_students_final_130[cont].rsplit(","))[0])[2:] :
+            
+            temp = decision_variables_students_final_130[cont].rsplit(",")
+            st = "x_" + str(f"{s + 1},{temp[1]},{temp[2]}")
+            end130.append(st)
+            cont += 1
+            if cont == len(decision_variables_students_final_130):
+                break  
+
+#print (decision_variables_students_final_130)
 
 #print_3d_array(Campo_1final,sixty)
-#print ("|" * 50)
 #print_3d_array(Campo_130final,ninety)
-
-final_problem = LpProblem("resfinale", sense=LpMaximize)
-
-final_xvariables = [LpVariable(f"{x}") for x in problem1.variables() if x.varValue == 1.0]
-final_yvariables = [LpVariable(f"{y}") for y in problem130.variables() if y.varValue == 1.0]
+'''
 
 print(final_xvariables)
 print(f"lunghezza x {len(final_xvariables)}")
 print(final_yvariables)
 print(f"lunghezza y {len(final_yvariables)}")
+'''
+final_problem = LpProblem("resfinale", sense=LpMinimize)
+
+slots_variable = [
+    [LpVariable(name=f"y{j+1},{k+1}", cat=LpBinary) for k in range(18)]
+        for j in range (6)
+    ]
+x_variables = [LpVariable(name= f"x_{i}", cat=LpBinary) for i in range (number_students_total)]
+
+# funzione obiettivo : minimizzare il numero di slot ovvero di ore utlizzate
+final_problem += lpDot(1,slots_variable)
+
+minimumslot =[s1,s15]
+print(minimumslot)
+final_problem += 54 >= lpDot(1,minimumslot)
+
+
+restraints = []
+
+
+#print(final_problem)
+#print(decision_variables_students_final_130)
+print(end1)
+print(end130)
