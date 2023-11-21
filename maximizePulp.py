@@ -505,7 +505,7 @@ for s,i in enumerate(ninety):
 '''
 
 print(final_xvariables)
-print(f"lunghezza x {len(final_xvariables)}")
+print(f"lunghezza x {len(final_xvariables)}"
 print(final_yvariables)
 print(f"lunghezza y {len(final_yvariables)}")
 '''
@@ -524,11 +524,104 @@ minimumslot =[s1,s15]
 print(minimumslot)
 final_problem += 54 >= lpDot(1,minimumslot)
 
+stu_content = []
+day_content = []
+final = []
 
-restraints = []
+save_stu = ((end1[0].rsplit(","))[0])[2:]
+save_day = ((end1[0].rsplit(","))[1])
+
+for i in end1 :
+    temp = i.rsplit(",")
+    stu = (temp[0])[2:]
+    day = temp[1]
+    if (stu == save_stu):
+        if (day == save_day):
+            stu_content.append(i)
+        else:
+            save_day = day
+            day_content.append(stu_content)
+            stu_content = []
+            stu_content.append(i)
+
+    else:
+        day_content.append(stu_content)
+        final.append(day_content)
+        
+        #print(final)
+        save_day = day
+        save_stu = stu
+        stu_content = []
+        day_content = [] 
+        stu_content.append(i)
+
+day_content.append(stu_content)
+final.append(day_content)
+
+ 
+for i,j in enumerate(final):
+    print(f"studente{i} {j}")
+x1 = final
+
+final = []
+day_content = []
+stu_content = []
+
+save_stu = ((end130[0].rsplit(","))[0])[2:]
+save_day = ((end130[0].rsplit(","))[1])
+print(end1,"\n")
+for i in end130 :
+    temp = i.rsplit(",")
+    stu = (temp[0])[2:]
+    day = temp[1]
+    if (stu == save_stu):
+        if (day == save_day):
+            stu_content.append(i)
+        else:
+            save_day = day
+            day_content.append(stu_content)
+            stu_content = []
+            stu_content.append(i)
+
+    else:
+        day_content.append(stu_content)
+        final.append(day_content)
+        
+        #print(final)
+        save_day = day
+        save_stu = stu
+        stu_content = []
+        day_content = [] 
+        stu_content.append(i)
+
+day_content.append(stu_content)
+final.append(day_content)
+
+x130 = final
+
+for i,j in enumerate(x130):
+    print(f"studente{i} {j}")
+
+print("\n",end130)
 
 
+#print(x1,"\n",x130,"\n")
+'''
+#Vincoli
+for i in x1:
+    for check1 in i:
+        day = (check1.rsplit(","))[1]
+        slot = (check1.rsplit(","))[2]
+
+        for j in x130:
+            for check130 in j:
+                if day == ((check130.rsplit(","))[1]) and slot == ((check130.rsplit(","))[2]):
+                    print(i)
+                    print(j,"")
+                    break
+'''            
+            
 #print(final_problem)
 #print(decision_variables_students_final_130)
-print(end1)
-print(end130)
+
+#print(end130)
