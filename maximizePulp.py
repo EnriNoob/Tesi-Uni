@@ -73,6 +73,20 @@ def receive_decision_variables(array,student,day,slot):
                     #print(j[slot])
                     return j[slot]  # ci prendiamo la variabile decisionale di quel particolare slot (x_i,j,k)
 
+# ci ritorna la variabile decisionale richiesta nella lista a 3 dimensioni delle variabili decisionali
+def receive_slots_decision_variables(array,lista):
+    l = []
+    for x in lista:
+        day = (x.rsplit(','))[1]
+        slot = (x.rsplit(','))[2]
+
+        for giorno in array:
+            for ora in giorno:
+                if day == ((ora.name).rsplit(",")[0])[1:] and slot == ((ora.name).rsplit(",")[1]):
+                    #print( ((ora.name).rsplit(",")[0])[:-1] , ((ora.name).rsplit(",")[1]) )
+                    l.append(ora)
+    return l
+
 # assegnamo alla matrice allievo di un particolare slot (60 o 90) le disponibilità degli studenti
 def assigning_allievo(array, dict, x,i,j,typeslot): 
     if(x == "no" or x == None): # case "no" or None in excel cell
@@ -509,20 +523,7 @@ print(f"lunghezza x {len(final_xvariables)}"
 print(final_yvariables)
 print(f"lunghezza y {len(final_yvariables)}")
 '''
-final_problem = LpProblem("resfinale", sense=LpMinimize)
 
-slots_variable = [
-    [LpVariable(name=f"y{j+1},{k+1}", cat=LpBinary) for k in range(18)]
-        for j in range (6)
-    ]
-x_variables = [LpVariable(name= f"x_{i}", cat=LpBinary) for i in range (number_students_total)]
-
-# funzione obiettivo : minimizzare il numero di slot ovvero di ore utlizzate
-final_problem += lpDot(1,slots_variable)
-
-minimumslot =[s1,s15]
-print(minimumslot)
-final_problem += 54 >= lpDot(1,minimumslot)
 
 stu_content = []
 day_content = []
@@ -558,9 +559,6 @@ for i in end1 :
 day_content.append(stu_content)
 final.append(day_content)
 
- 
-for i,j in enumerate(final):
-    print(f"studente{i} {j}")
 x1 = final
 
 final = []
@@ -569,7 +567,8 @@ stu_content = []
 
 save_stu = ((end130[0].rsplit(","))[0])[2:]
 save_day = ((end130[0].rsplit(","))[1])
-print(end1,"\n")
+
+
 for i in end130 :
     temp = i.rsplit(",")
     stu = (temp[0])[2:]
@@ -599,29 +598,80 @@ final.append(day_content)
 
 x130 = final
 
-for i,j in enumerate(x130):
-    print(f"studente{i} {j}")
+print(x1,"\n",x130,"\n")
 
-print("\n",end130)
+final_problem = LpProblem("resfinale", sense=LpMinimize)
 
+slots_variable = [
+    [LpVariable(name=f"y{j+1},{k+1}", cat=LpBinary) for k in range(18)]
+        for j in range (6)
+    ]
+x_variables = [LpVariable(name= f"x_{i+1}", cat=LpBinary) for i in range (1944)]
 
-#print(x1,"\n",x130,"\n")
-'''
+# funzione obiettivo : minimizzare il numero di slot ovvero di ore utlizzate
+final_problem += lpDot(1,slots_variable)
+print(final_problem)
+
+minimumslot =[s1,s15]
+print(minimumslot)
+final_problem += 54 >= lpDot(1,minimumslot)
+
+stop = False
 #Vincoli
+cont = 0
+sus = []
 for i in x1:
+    #print(i)
     for check1 in i:
-        day = (check1.rsplit(","))[1]
-        slot = (check1.rsplit(","))[2]
+        print(f"\ncontrolliamo {check1}")
+        first = receive_slots_decision_variables(slots_variable,check1)
+        print(first)
+        final_problem += lpDot(1,first) == lpSum(2 * x_variables[cont])
+        sus.append(x_variables[cont])
+        cont += 1
+        
+        for j in check1:
+            if (stop):
+                stop = False
+                break
+            else:
+                day = (j.rsplit(","))[1]
+                slot = (j.rsplit(","))[2]
+    
 
-        for j in x130:
-            for check130 in j:
-                if day == ((check130.rsplit(","))[1]) and slot == ((check130.rsplit(","))[2]):
-                    print(i)
-                    print(j,"")
-                    break
-'''            
+            for t in x130:
+                for check130 in t:
+                    for z in check130:
+                        giorno = (z.rsplit(","))[1]
+                        ora = (z.rsplit(","))[2]
+
+                        if day == giorno and slot == ora:
+                            second = receive_slots_decision_variables(slots_variable,check130)
+                            sus.append(x_variables[cont])
+                            final_problem += lpDot(1,second) == lpSum(3 * x_variables[cont])
+                            cont += 1
+                            print(check130)
+                           
+                            #print(second)
+                            stop = True
+                            break
+                       
+        if(len(second) == 0):
+            print("no match")
+            final_problem += lpDot(1,first) == 2
+        else:
+            final_problem += lpDot(1,sus) == 1
+            sus.clear()
+            print('lul',second)
+            second.clear()
+            break
             
-#print(final_problem)
-#print(decision_variables_students_final_130)
+            
+        
+            
+print(final_problem)
+solve = final_problem.solve(PULP_CBC_CMD(msg = False))
 
-#print(end130)
+for v in  final_problem.variables():
+    print(v.name, "=", v.varValue)
+
