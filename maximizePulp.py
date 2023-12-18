@@ -4,25 +4,6 @@ import numpy as np
 from pulp import *
 # dizionario in cui si assegna uno slot ad un numero
 # ogni slot dura da x fino a x + 01:00
-slots_1hour_dict ={ #slot da un'ora
-    "09:00" : 0,
-    "10:00" : 1,
-    "11:00" : 2,
-    "14:00" : 3,
-    "15:00" : 4,
-    "16:00" : 5,
-    "17:00" : 6,
-    "18:00" : 7,
-    "19:00" : 8
-}
-slots_130_hour_dict = { # slot da un'ora e mezza
-    "09:00" : 0,
-    "10:30" : 1,
-    "14:00" : 2,
-    "15:30" : 3,
-    "17:00" : 4,
-    "18:30" : 5
-}
 slots_half_hour = { # tutti slot da un'ora
     "09:00" : 0,
     "09:30" : 1,
@@ -59,7 +40,7 @@ def print_comparison_3d_array(array1,array2,trainings,typeslot):
     cont = 0
     for s,i in enumerate(typeslot):
         if i == 1:
-            print (f"studente {s+1} può fare al massimo {trainings[cont]} allenamenti\n")
+            print (f"studente {s+1} può fare al più {trainings[cont]} allenamenti\n")
             for j in range(6):
                 print(array1[cont,j,:],array2[cont,j,:])
             cont += 1
@@ -70,7 +51,7 @@ def receive_decision_variables(array,student,day,slot):
         if s == student: # ci prendiamo quel particolare studente
             for d,j in enumerate(i):    
                 if d == day:    # ci prendiamo quel particolare giorno
-                    #print(j[slot])
+                    #print(f"decision variable{j[slot]}")
                     return j[slot]  # ci prendiamo la variabile decisionale di quel particolare slot (x_i,j,k)
 
 # ci ritorna la variabile decisionale richiesta nella lista a 3 dimensioni delle variabili decisionali
@@ -88,20 +69,21 @@ def receive_slots_decision_variables(array,lista):
     return l
 
 # assegnamo alla matrice allievo di un particolare slot (60 o 90) le disponibilità degli studenti
-def assigning_allievo(array, dict, x,i,j,typeslot): 
+def assigning_allievo(array,x,i,j,z): 
     if(x == "no" or x == None): # case "no" or None in excel cell
-            array[i,j,:] = 0
-            return
+        array[i,j,:] = 0
+        return
             
     elif("poi" in x): # case "da x in poi"
         slot = x[3:8]
-        array[i,j,dict[slot]:] = 1
+        array[i,j,slots_half_hour[slot]:] = 1
     
     elif(x == "tutto il pome"): # case "tutto il pome"
-        if typeslot == 90:
-            array[i,j,dict["14:00"]:dict["17:00"]] = 1
-        else :
-            array[i,j,dict["14:00"]:dict["18:00"]] = 1
+        if z == "90":
+            
+            array[i,j,slots_half_hour["14:00"]:slots_half_hour["18:30"]] = 1
+        else : 
+            array[i,j,slots_half_hour["14:00"]:slots_half_hour["18:00"]] = 1
             
     elif("giorno" in x): # case "tutto il giorno"
         array[i,j,:] = 1
@@ -109,30 +91,21 @@ def assigning_allievo(array, dict, x,i,j,typeslot):
     elif("dopo" in x): # case "da x o dopo y"
         firstHour = x[3:8]
         secondHour = x[16:21]
-        array[i,j,dict[firstHour]:] = 1
+        array[i,j,slots_half_hour[firstHour]:] = 1
     
     else: #case "da x a y"
         firstHour = x[3:8]
         secondHour = x[11:16]
-        if typeslot == 90:
-            if secondHour == "12:00":
-                array[i,j, dict[firstHour] : dict["10:30"] + 1] = 1
-                
-            elif secondHour == "20:00":
-                array[i,j, dict[firstHour] : dict["18:30"] + 1] = 1
-                
-            else: 
-                array[i,j,dict[firstHour] : dict[secondHour]] = 1
+       
+        if secondHour == "12:00":
+            array[i,j, slots_half_hour[firstHour] : slots_half_hour["11:30"] + 1] = 1
             
-        else:
-            if secondHour == "12:00":
-                array[i,j, dict[firstHour] : dict["11:00"] + 1] = 1
-                
-            elif secondHour == "20:00":
-                array[i,j, dict[firstHour] : dict["19:00"] + 1] = 1
-                
-            else: 
-                array[i,j,dict[firstHour] : dict[secondHour]] = 1
+        elif secondHour == "20:00":
+            array[i,j, slots_half_hour[firstHour] : slots_half_hour["19:30"] + 1] = 1
+            
+        else: 
+            array[i,j,slots_half_hour[firstHour] : slots_half_hour[secondHour]] = 1
+    
 
 def check_dissatisfied(array, slots, nstudents, ntraining, decision_variables):
     
@@ -155,9 +128,9 @@ workBook = openpyxl.load_workbook("vincoli2.xlsx")   # Workbook oggetto
 third_sheet = workBook.sheetnames[2]
 #second_sheet = workBook.sheetnames[1]               # prendiamo il nome del foglio desiderato del file excel
 active_worksheet = workBook[third_sheet]             # impostiamo il foglio corrente come attivo
-
 number_students_total = active_worksheet.max_row - 2 # numero totale degli studenti
-contentRow = []
+
+contentRow = [] # conterrà i valori della tupla man mano che scannerizza le righe di excel
 
 number_students1 = 0    # numero degli studenti che fanno allenamenti da un'ora
 number_students130 = 0  # numero degli studenti che fanno allenamenti da un'ora e mezza
@@ -168,6 +141,7 @@ sixty = []              # raccoglie la posizione esatta degli studenti con allen
 for i,row in enumerate (active_worksheet.iter_rows(min_row=3, max_col=active_worksheet.max_column, max_row=active_worksheet.max_row)):
     for cell in row:
         contentRow.append(cell.value) # una riga completa
+
     if contentRow[3] == 90:
         number_students130 += 1
         ninety.append(1)
@@ -179,49 +153,49 @@ for i,row in enumerate (active_worksheet.iter_rows(min_row=3, max_col=active_wor
 
     contentRow.clear()
 
-#print(f"studenti che fanno allenamento da un ora {number_students1}",sixty)    
-#print(f"studenti che fanno allenamento da un ora e mezza {number_students130}",ninety)
+#print(f"studenti che fanno allenamento da un'ora => {number_students1}",sixty)    
+#print(f"studenti che fanno allenamento da un'ora e mezza => {number_students130}",ninety)
+
+# creazione array dove ogni posizione è uno studente e il suo valore è il numero
+# massimo di allenamenti che fa in settimana 
 number_training1 = np.zeros(number_students1,dtype = int)
 number_training130 = np.zeros(number_students130,dtype = int)
-
 
 # creazione degli array a 3 dimensioni dove 
 # ogni posizione è 1 se uno certo studente i è disponibile
 # di fare allenamento per quel giorno e per quel slot
 # 0 altrimenti
-Allievo1 = np.zeros((number_students1,6,9),dtype = int)
-Allievo130 = np.zeros((number_students130,6,6),dtype = int)
+Allievo1 = np.zeros((number_students1,6,18),dtype = int)
+Allievo130 = np.zeros((number_students130,6,18),dtype = int)
 # array a 3 dimensioni che verranno popolate dalla funzione obiettivo
-Campo1 = np.zeros((number_students_total,6,9),dtype = int)
-Campo130 = np.zeros((number_students_total,6,6),dtype = int)
+Campo1 = np.zeros((number_students_total,6,18),dtype = int)
+Campo130 = np.zeros((number_students_total,6,18),dtype = int)
 #Slots = np.zeros((6,9), dtype = int)
 
 cont1 = 0
 cont130 = 0
 switch = True
-dio = []
-# assegnamo agli array 3d allievo1 e 130 le diponibilità
+
+# assegnamo agli array 3d allievo1 e 130 le diponibilità da parte degli allievi
 for i,row in enumerate (active_worksheet.iter_rows(min_row=3, max_col=active_worksheet.max_column, max_row=active_worksheet.max_row)):
-    # adding to contentRow all the values of the tuple that we get with iter_rows
+    # aggiungiamo a contentRow tutti i valori della tupla che viene estratta da iter_rows
     for cell in row:
         contentRow.append(cell.value)
 
-    # prendere il numero di allenemanti massimi di ogni studente
+    # prendere il numero di allenemanti massimi di ogni studente e se fa allenamento da un'ora opuure un'ora e mezza
     if "1" in contentRow[2] or "2" in contentRow[2] or "3" in contentRow[2] or "4" in contentRow[2]:
-        string = contentRow[2]
-        if contentRow[3] == 90:
-                dio.append(3)
-                number_training130[cont130] = int(string[0:1])     
-        else: #60
-                number_training1[cont1] = int(string[0:1])
-                dio.append(2)
-    # lettura degli slot 
+        trainings = contentRow[2]
+
+        if contentRow[3] == 90: number_training130[cont130] = int(trainings[0:1])     
+        else: number_training1[cont1] = int(trainings[0:1])
+
+    # lettura degli slot (un sottoinsieme di una riga!)
     for j,x in enumerate(contentRow[4:10]):
         if contentRow[3] == 90:
-            assigning_allievo(Allievo130,slots_130_hour_dict,x,cont130,j,90)
-            switch= True
+            assigning_allievo(Allievo130,x,cont130,j,"90")
+            switch = True
         else:
-            assigning_allievo(Allievo1,slots_1hour_dict,x,cont1,j,60)
+            assigning_allievo(Allievo1,x,cont1,j,"60")
             switch = False
 
     if(switch):
@@ -230,8 +204,9 @@ for i,row in enumerate (active_worksheet.iter_rows(min_row=3, max_col=active_wor
         cont1 += 1
 
     contentRow.clear()
-#print_3d_array(Allievo1,number_training1)
-#print_3d_array(Allievo130,number_training130)
+
+#print_3d_array(Allievo1,sixty)
+print_3d_array(Allievo130,ninety)
 #print(number_training1)
 #print(number_training130)
 
@@ -243,13 +218,13 @@ j = 0
 # variabili decisionali, x per quelli da un'ora e y per quelli da un'ora e mezza
 students_variables1 =[
     [   
-    [LpVariable(name=f"x_{i+1},{j+1},{k+1}", cat=LpBinary) for k in range(9)]
+    [LpVariable(name=f"x_{i+1},{j+1},{k+1}", cat=LpBinary) for k in range(18)]
         for j in range(6)
     ] for i in range(number_students1)
 ]
 students_variables130 =[
     [   
-    [LpVariable(name=f"y_{i+1},{j+1},{k+1}", cat=LpBinary) for k in range(6)]
+    [LpVariable(name=f"y_{i+1},{j+1},{k+1}", cat=LpBinary) for k in range(18)]
         for j in range(6)
     ] for i in range(number_students130)
 ]
@@ -259,7 +234,7 @@ problem130 += lpDot(1,students_variables130)
 
 #---------------------------vincoli------------------------
 # 2) vincolo // ogni studente si allena al massimo una volta al giorno
-# per farlo dobbiamo controllare l'array 3d allievo e vedere quale studente per un certo giorno per un certo slot è libero (1, o altrimenti)
+# per farlo dobbiamo controllare l'array 3d allievo e vedere quale studente per un certo giorno per un certo slot è libero (1, 0 altrimenti)
 # una volta capito se è libero dobbiamo prendere la variabile decisionale corrispondente (di quello studente per quel certo giorno per quel certo slot) 
 # e mettere tutte le variabili decisionali di uno studente di un giorno (o più) in una espressione lineare e controllare che sia <=1
 # 1) vincolo // aggiunto se no uno studente non ha disponibilità per un certo giorno per uno certo slot la variabile decisionale corrispondente è uguale a 0
@@ -274,20 +249,25 @@ for s,i in enumerate(Allievo1):
                 students_zero.append(receive_decision_variables(students_variables1,s,d,o))
             else: # k == 1
                 students_one.append(receive_decision_variables(students_variables1,s,d,o))
-
+                
         #print(students_one)
         if not(len(students_zero) == 0):
             problem1 += lpSum(1 * students_zero) == 0
         
         if not(len(students_one) == 0):
-            problem1 += lpSum(1 * students_one) <= 1
-        
+
+            if len(students_one) >= 2:
+                
+                for z in range(0,len(students_one),2):
+                    #if z == (len(students_one) - 1): break
+                    problem1 += lpDot(1, students_one[z]) == lpDot(1, students_one[z + 1])
+                    
+            problem1 += lpDot(1,students_one) <= 2 #solo un allenamento al giorno (2 slot) 
         students_one.clear()
         students_zero.clear()
 # vincolo 3 // per ogni slot ci devono essere al massimo 4 allievi
-
 for day in range(6):
-    for slot in range(9):
+    for slot in range(18):
         for student in range(number_students1):
             if(Allievo1[student,day,slot] == 1):
                 students_one.append(receive_decision_variables(students_variables1,student,day,slot))
@@ -303,7 +283,7 @@ for s,i in enumerate(Allievo1):
             if k == 1:
                 students_one.append(receive_decision_variables(students_variables1,s,d,o)) 
 
-    problem1 += lpSum(1 * students_one) <= number_training1[s]
+    problem1 += lpSum(1 * students_one) <= (number_training1[s] * 2)
     students_one.clear()
 
 # stessa cosa ma per gli studenti da un'ora e mezza
@@ -323,13 +303,22 @@ for s,i in enumerate(Allievo130):
             problem130 += lpSum(1 * students_zero) == 0
         
         if not(len(students_one) == 0):
-            problem130 += lpSum(1 * students_one) <= 1
+
+            if len(students_one) >= 3:
+                
+                for z in range(0,len(students_one),3):
+                    if z == (len(students_one) - 1): break
+                    #print(students_one)
+                    problem130 += lpDot(1, students_one[z]) == lpDot(1, students_one[z + 1])
+                    problem130 += lpDot(1, students_one[z + 1]) == lpDot(1, students_one[z + 2])
+                    
+            problem130 += lpDot(1,students_one) <= 3 #solo un allenamento al giorno (3 slot)
         
         students_one.clear()
         students_zero.clear()
 
 for day in range(6):
-    for slot in range(6):
+    for slot in range(18):
         for student in range(number_students130):
             if(Allievo130[student,day,slot] == 1):
                 students_one.append(receive_decision_variables(students_variables130,student,day,slot))
@@ -345,7 +334,7 @@ for s,i in enumerate(Allievo130):
             if k == 1:
                 students_one.append(receive_decision_variables(students_variables130,s,d,o)) 
 
-    problem130 += lpSum(1 * students_one) <= number_training130[s]
+    problem130 += lpSum(1 * students_one) <= (number_training130[s] * 3)
     students_one.clear()
 
 # risoluzione dei problemi
@@ -357,53 +346,32 @@ status130 = problem130.solve(PULP_CBC_CMD(msg = False))
 for v in problem1.variables():
     
     if v.varValue == 1.0:
-        if v.name[3] != ',': # x_32,4,9
-            Campo1[int(v.name[2:4]) - 1,int(v.name[5:6]) - 1,int(v.name[-1]) - 1] = 1
-        else:                # x_1,2,3
-            Campo1[int(v.name[2:3]) - 1,int(v.name[4:5]) - 1,int(v.name[-1]) - 1] = 1
+        #print(v.name)
+        temp = (v.name).rsplit(",")
+        Campo1[int((temp[0])[2:]) - 1,int(temp[1]) - 1,int(temp[2]) - 1] = 1
 # 90
 for v in problem130.variables():
     if v.varValue == 1.0:
-        if v.name[3] != ',': # x_32,4,9
-            Campo130[int(v.name[2:4]) - 1,int(v.name[5:6]) - 1,int(v.name[-1]) - 1] = 1
-        else:                # x_1,2,3
-            Campo130[int(v.name[2:3]) - 1,int(v.name[4:5]) - 1,int(v.name[-1]) - 1] = 1
-'''
-# per controllare se la matrice campo rispetta il vincolo 3
-test = []
-for day in range(6):
-    for slot in range(5):
-        cont = 0
-        for student in range(number_students130):
-            if(Campo130[student,day,slot] == 1):
-                students_one.append(Campo130[student,day,slot])
-                test.append(receive_decision_variables(students_variables130,student,day,slot))
-                cont += 1
+        temp = (v.name).rsplit(",")
+        Campo130[int((temp[0])[2:]) - 1,int(temp[1]) - 1,int(temp[2]) - 1] = 1
         
-        if(len(test) != 0):
-            print(test)
-            pass
-        students_one.clear()
-        test.clear()
-        if cont > 4 or len(students_one) > 4:
-            print(f"c'è uno slot in cui ci sono 5 o più studenti nel giorno{day + 1} e slot{slot + 1}")
-'''
-#print_comparison_3d_array(Allievo,Campo,numberOfStudents)
-#print_3d_array(Campo130,ninety)
+print_3d_array(Campo130,ninety)
 #print_3d_array(Campo1,sixty)
 #print(problem1)
 #print(problem130)
 s1 = ceil(number_students1 / 4)
 s15 = ceil(number_students130 / 4)
 
-check_dissatisfied(Campo1, 9, number_students1, number_training1, students_variables1) 
-check_dissatisfied(Campo130, 6, number_students130, number_training130, students_variables130)
+#check_dissatisfied(Campo1, 9, number_students1, number_training1, students_variables1) 
+#check_dissatisfied(Campo130, 6, number_students130, number_training130, students_variables130)
 
-#print_comparison_3d_array(Allievo1,Campo1,number_training1,sixty)
-#print_comparison_3d_array(Allievo130,Campo130,number_training130,ninety)
+print_comparison_3d_array(Allievo1,Campo1,number_training1,sixty)
+print_comparison_3d_array(Allievo130,Campo130,number_training130,ninety)
+
+
+print ("valore ottimo per gli studenti da un'ora e mezza = ", problem130.objective.value())
 
 print ("valore ottimo per gli studenti da un'ora= ", problem1.objective.value())
-print ("valore ottimo per gli studenti da un'ora e mezza = ", problem130.objective.value())
 
 print(s1,s15)
 
@@ -416,12 +384,12 @@ decision_variables_students_final_1 = []
 decision_variables_students_final_130 = []
 
 new_sixty = []
-
+'''
 for i in range(number_students1):
     for j in range(6):
         for k in range(9):
             if Campo1[i,j,k] == 1: 
-                keys = [y for y, v in slots_1hour_dict.items() if v == k]
+                keys = [y for y, v in slots_1hour_slots_half_hour.items() if v == k]
                 Campo_1final[i,j,slots_half_hour[keys[0]] : slots_half_hour[keys[0]] + 2] = 1
                 decision_variables_students_final_1.append(f"x_{i + 1},{j + 1},{slots_half_hour[keys[0]] +1}")
                 decision_variables_students_final_1.append(f"x_{i + 1},{j + 1},{slots_half_hour[keys[0]] + 2}")
@@ -430,7 +398,7 @@ for i in range(number_students130):
     for j in range(6):
         for k in range(6):
             if Campo130[i,j,k] == 1:
-                keys = [y for y, v in slots_130_hour_dict.items() if v == k]
+                keys = [y for y, v in slots_130_hour_slots_half_hour.items() if v == k]
                 Campo_130final[i,j,slots_half_hour[keys[0]] : slots_half_hour[keys[0]] + 3] = 1
                 decision_variables_students_final_130.append(f"x_{i +1},{j + 1},{slots_half_hour[keys[0]] + 1}")
                 decision_variables_students_final_130.append(f"x_{i +1},{j + 1},{slots_half_hour[keys[0]] + 2}")
@@ -516,13 +484,13 @@ for s,i in enumerate(ninety):
 
 #print_3d_array(Campo_1final,sixty)
 #print_3d_array(Campo_130final,ninety)
-'''
+
 
 print(final_xvariables)
 print(f"lunghezza x {len(final_xvariables)}"
 print(final_yvariables)
 print(f"lunghezza y {len(final_yvariables)}")
-'''
+
 
 
 stu_content = []
@@ -666,12 +634,10 @@ for i in x1:
             second.clear()
             break
             
-            
-        
-            
 print(final_problem)
 solve = final_problem.solve(PULP_CBC_CMD(msg = False))
 
 for v in  final_problem.variables():
     print(v.name, "=", v.varValue)
 
+'''
