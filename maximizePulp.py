@@ -371,7 +371,7 @@ print ("valore ottimo per gli studenti da un'ora e mezza = ", problem130.objecti
 print ("valore ottimo per gli studenti da un'ora= ", problem1.objective.value())
 print(s1,s15)
 
-res = np.zeros((number_students_total,6,18),dtype = int)
+
 
 decision_variables_students_final_1 = []
 decision_variables_students_final_130 = []
@@ -553,7 +553,7 @@ slots_variable = [
     [LpVariable(name=f"y{j+1},{k+1}", cat=LpBinary) for k in range(18)]
         for j in range (6)
     ]
-x_variables = [LpVariable(name= f"x_{i+1}", cat=LpBinary) for i in range (1944)]
+x_variables = [LpVariable(name= f"x_{i+1}", cat=LpBinary) for i in range (150)]
 
 # funzione obiettivo : minimizzare il numero di slot ovvero di ore utlizzate
 final_problem += lpDot(1,slots_variable)
@@ -592,12 +592,8 @@ for i in x1:
         else:
             already_used.extend(first)
         #print(f"porco dio {already_used}")
-        final_problem += lpDot(1,x_variables[cont]) == 1
-        final_problem += lpDot(1,first) == lpSum(2 * x_variables[cont])
         #final_problem += lpDot(1,first[0]) == lpDot(1,first[1])
-        sus.append(x_variables[cont])
-        cont += 1
-        
+        sus.append(x_variables[cont])   
         for j in check1:
             if (stop):
                 stop = False
@@ -608,7 +604,6 @@ for i in x1:
     
             for t in x130: # uno studente da tre slot 
                 #print(t)
-                if(stop) : break
                 for check130 in t: # per un certo giorno di quel studente  
                     if (stop) : break
                     for z in check130: # gli slot di quel giorno di quel studente
@@ -616,9 +611,10 @@ for i in x1:
                         ora = (z.rsplit(","))[2]
                         if day == giorno and slot == ora:
                             print(check130)
+                            final_problem += lpDot(1,first) == lpSum(2 * x_variables[cont])
+                            cont += 1
                             second = receive_slots_decision_variables(slots_variable,check130)
                             sus.append(x_variables[cont])
-                            final_problem += lpDot(1,x_variables[cont]) == 1
                             final_problem += lpDot(1,second) == lpSum(3 * x_variables[cont])
                             #final_problem += lpDot(1,second[0]) == lpDot(1,second[1])
                             #final_problem += lpDot(1,second[1]) == lpDot(1,second[2])
@@ -632,7 +628,14 @@ for i in x1:
             print("no match")
             final_problem += lpDot(1,first) == 2
         else:
-            final_problem += lpDot(1,sus) == 1
+            #final_problem += lpDot (1,sus[0]) <= lpDot (1,sus[1])
+            
+            final_problem += lpDot(1,sus) >= 1
+            '''
+            for item in sus:
+                final_problem += lpDot(1,item) == 1
+            '''
+              
             sus.clear()
             #print('lul',second)
             second.clear()
@@ -645,3 +648,16 @@ for v in  final_problem.variables():
     print(v.name, "=", v.varValue)
 
 print ("valore ottimo degli slot minimi ", final_problem.objective.value())
+
+res = np.zeros((6,18),dtype = int)
+
+x = 0
+y = 0
+
+for v in final_problem.variables():
+    if "y" in v.name and v.varValue == 1:
+        temp = (v.name).rsplit(",")
+        #print(temp[0]+","+temp[1])
+        res[int((temp[0])[1:]) - 1][int(temp[1]) - 1] = 1
+    
+print(res)
