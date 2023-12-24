@@ -40,7 +40,7 @@ def print_comparison_3d_array(array1,array2,trainings,arrayPosition,hour):
     cont = 0
     for s,i in enumerate(arrayPosition):
         if i == hour:
-            print (f"studente {s+1} può fare al più {trainings[cont]} allenamenti\n")
+            print (f"studente {s+1} vuole fare al più {trainings[cont]} allenamenti\n")
             for j in range(6):
                 print(array1[cont,j,:],array2[cont,j,:])
             cont += 1
@@ -60,7 +60,6 @@ def receive_slots_decision_variables(array,lista):
     for x in lista:
         day = (x.rsplit(','))[1]
         slot = (x.rsplit(','))[2]
-
         for giorno in array:
             for ora in giorno:
                 if day == ((ora.name).rsplit(",")[0])[1:] and slot == ((ora.name).rsplit(",")[1]):
@@ -80,7 +79,6 @@ def assigning_allievo(array,x,i,j,z):
     
     elif(x == "tutto il pome"): # case "tutto il pome"
         if z == "90":
-            
             array[i,j,slots_half_hour["14:00"]:slots_half_hour["18:30"]] = 1
         else : 
             array[i,j,slots_half_hour["14:00"]:slots_half_hour["18:00"]] = 1
@@ -106,7 +104,8 @@ def assigning_allievo(array,x,i,j,z):
         else: 
             array[i,j,slots_half_hour[firstHour] : slots_half_hour[secondHour]] = 1
     
-
+# funzione che riempe di 0 lo studente i della matrice tridimensionale array il che vuol dire
+# controllando se il numero di 1 è uguale al numero di allenamenti da lui dichiarato 
 def check_dissatisfied(array, nstudents, ntraining, nslots):
     
        for i in range(nstudents):
@@ -120,8 +119,20 @@ def check_dissatisfied(array, nstudents, ntraining, nslots):
         if sum != (ntraining[i] * nslots):
             print(f"studente{i} rimarrà insodisfatto")
             array[i,:,:] = 0
-            
-        
+
+def check_same_slots(slot1,slot2,i):
+    day = bucket_days130[i]
+    res = []
+    for k in range (0,len(day),3):
+        if slot1 == day[k] or slot1 == day[k + 1] or slot1 == day[k + 2]\
+            or slot2 == day[k] or slot2 == day[k + 1] or slot2 == day[k + 2]:
+                res.append(day[k])
+                res.append(day[k + 1])
+                res.append(day[k + 2])
+                
+    return res
+    
+    
 # per aprire il workbook 
 workBook = openpyxl.load_workbook("vincoli2.xlsx")   # Workbook oggetto
 third_sheet = workBook.sheetnames[2]
@@ -354,11 +365,11 @@ for v in problem130.variables():
 #print_3d_array(Campo130,ninety)
 #print_3d_array(Campo1,sixty)
 #print(problem1)
-print(problem130)
+#print(problem130)
+# minimo numero di slot da un'ora e da un'ore e mezza
 s1 = ceil(number_students1 / 4)
 s15 = ceil(number_students130 / 4)
-
-
+# controlliamo se ad uno studente non gli sono stati assegnati tutti gli allenamenti
 check_dissatisfied(Campo1, number_students1, number_training1, 2) 
 check_dissatisfied(Campo130, number_students130, number_training130, 3)
 
@@ -366,12 +377,9 @@ print_comparison_3d_array(Allievo1,Campo1,number_training1,exact_position,6)
 print("|" * 80,'\n')
 print_comparison_3d_array(Allievo130,Campo130,number_training130,exact_position,9)
 
-
 print ("valore ottimo per gli studenti da un'ora e mezza = ", problem130.objective.value())
 print ("valore ottimo per gli studenti da un'ora= ", problem1.objective.value())
 print(s1,s15)
-
-
 
 decision_variables_students_final_1 = []
 decision_variables_students_final_130 = []
@@ -390,9 +398,9 @@ for i in range(number_students_total):
 
 #print(len(decision_variables_students_final_1),decision_variables_students_final_1)
 #print(len(decision_variables_students_final_130),decision_variables_students_final_130)
-# in questi for vado a modificare sixty e ninety
+# in questi for vado a modificare exact_position
 # perchè è possibile che ci sia qualche studente non soddisfatto (es: dichiarato due allenamenti ma assegnato solo uno) e quindi aggiornamo
-# nella posizione esatta il fatto che non ci sia più
+# nella posizione esatta il fatto che non ci sia più (0)
 zeros = 0
 stu6 = 0
 stu9 = 0
@@ -418,11 +426,11 @@ for s,i in enumerate(exact_position):
             exact_position[s] = 0
         stu9 += 1
 
-
 cont1 = 0
 cont130 = 0
 end1 = []
 end130 = []
+
 
 for s,i in enumerate(exact_position):
     if i == 6 :
@@ -463,16 +471,12 @@ for s,i in enumerate(exact_position):
             if cont130 == len(decision_variables_students_final_130):
                 break  
 
-print(end1)
-print(end130)
+#print(end1)
+#print(end130)
+
+
 #print_3d_array(Campo_1final,sixty)
 #print_3d_array(Campo_130final,ninety)
-'''
-print(final_xvariables)
-print(f"lunghezza x {len(final_xvariables)}"
-print(final_yvariables)
-print(f"lunghezza y {len(final_yvariables)}")
-'''
 
 stu_content = []
 day_content = []
@@ -557,17 +561,19 @@ x_variables = [LpVariable(name= f"x_{i+1}", cat=LpBinary) for i in range (150)]
 
 # funzione obiettivo : minimizzare il numero di slot ovvero di ore utlizzate
 final_problem += lpDot(1,slots_variable)
-print(final_problem)
+
 
 minimumslot =[s1,s15]
-print(minimumslot)
+#print(minimumslot)
 if (54 <= s1 + s15):
     print(f"il numero totali è minore della somma degli slot minimi")
     exit()
 
+
+#Vincoli
+
 stop = False
 halt = False
-#Vincoli
 cont = 0
 sus = []
 already_used = []
@@ -584,7 +590,7 @@ for i in x1:
                     #print(item, item2)
                     #print(f"ci sono già {item}")
                     halt = True
-                    break
+                    break 
             if(halt) : break
         if (halt):
             halt = False
@@ -611,37 +617,38 @@ for i in x1:
                         ora = (z.rsplit(","))[2]
                         if day == giorno and slot == ora:
                             print(check130)
-                            final_problem += lpDot(1,first) == lpSum(2 * x_variables[cont])
+                            final_problem += lpDot(1,first) >= lpDot(2, x_variables[cont])
+                            #final_problem += lpDot(1, first[0]) == lpDot (1, first[1])
                             cont += 1
                             second = receive_slots_decision_variables(slots_variable,check130)
+                            #final_problem += lpDot(1,second[0]) == lpDot(1,second[1])
+                            #final_problem += lpDot(1,second[1]) == lpDot(1,second[2])
                             sus.append(x_variables[cont])
-                            final_problem += lpDot(1,second) == lpSum(3 * x_variables[cont])
+                            final_problem += lpDot(1,second) >= lpDot(3, x_variables[cont])
+
                             #final_problem += lpDot(1,second[0]) == lpDot(1,second[1])
                             #final_problem += lpDot(1,second[1]) == lpDot(1,second[2])
                             cont += 1
                             print(second)
                             stop = True
                             break
-                    
 
         if(len(second) == 0):
             print("no match")
             final_problem += lpDot(1,first) == 2
         else:
             #final_problem += lpDot (1,sus[0]) <= lpDot (1,sus[1])
-            
-            final_problem += lpDot(1,sus) >= 1
-            '''
-            for item in sus:
-                final_problem += lpDot(1,item) == 1
-            '''
-              
+            final_problem += lpDot(1,sus) >= 1 
+            #final_problem += lpDot(1,sus[0]) == 1
+            #final_problem += lpDot(1,sus[0]) == 1
+        
             sus.clear()
             #print('lul',second)
             second.clear()
             break               
-                    
+ 
 print(final_problem)
+
 solve = final_problem.solve(PULP_CBC_CMD(msg = False))
 
 for v in  final_problem.variables():
@@ -650,9 +657,6 @@ for v in  final_problem.variables():
 print ("valore ottimo degli slot minimi ", final_problem.objective.value())
 
 res = np.zeros((6,18),dtype = int)
-
-x = 0
-y = 0
 
 for v in final_problem.variables():
     if "y" in v.name and v.varValue == 1:
