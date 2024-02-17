@@ -7,6 +7,9 @@ db = SQLAlchemy()
 DB_NAME = "database.db"
 
 def create_app():
+    # creiamo un oggetto flask con __name__ che arriva daa main.py
+    # il web server passerà le richieste inviate dal client a questo oggetto della classe flask
+    # utilizzando il protocollo WSGI (web server gateway interface)
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'sdhfjdshgreghuewrg'
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'

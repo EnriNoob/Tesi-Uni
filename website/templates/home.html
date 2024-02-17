@@ -2,5 +2,35 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
-<h1> this is the fucking home page </h1>
+{% if name %}
+    <h1>Benvenuto {{ name }}!</h1>
+{% else %}
+    <h1>Benvenuto!</h1>
+{% endif %}
+<div class="main">
+    <div class="menu">
+        <a href="ccalendar" class="fill-div">
+        <div class="menuitems">
+            <i class="fa-regular fa-calendar-days" style="font-size:100px" type="submit" href="ccalendar.html"></i>
+            <h1 id="menuh1">crea calendario</h1>
+        </div>
+        </a>
+        <div class="menuitems">
+            <i class="fa-regular fa-calendar-minus" style="font-size:100px"></i>
+            <h1 id="menuh1">modifica calendario</h1>
+        </div>
+        <div class="menuitems">
+            <i class="fa-solid fa-user-plus" style="font-size:100px"></i>
+            <h1 id="menuh1">aggiungi allievo</h1>
+        </div>
+        <div class="menuitems">
+            <i class="fa-solid fa-user-minus" style="font-size:100px"></i>
+            <h1 id="menuh1">modifica allievo</h1>
+        </div>
+        <div class="menuitems">
+            <i class="fa-solid fa-check" style="font-size:100px"></i>
+            <h1 id="menuh1">conferma calendario</h1>
+        </div>
+    </div>
+</div>
 {% endblock %}

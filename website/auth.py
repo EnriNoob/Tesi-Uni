@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
-from .import db
+from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 
 
@@ -15,8 +15,8 @@ def login():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
-
         user = User.query.filter_by(email=email).first()
+        
         if user:
             if check_password_hash(user.password,password):
                 flash('login avvenuto con successo')
@@ -66,4 +66,6 @@ def sign_up():
 
 
     return render_template("sign_up.html", user = current_user)
-
+@auth.route('/ccalendar')
+def create_calendar():
+    return render_template("ccalendar.html", user = current_user)

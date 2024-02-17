@@ -2,46 +2,26 @@
 {% block title %} Sign up {% endblock %}
 
 {% block content %}
-<h1> this is the sign up page </h1>
+<h1> Pagina iscrizione account </h1>
 <form method="post">
-    <h3 align = "center"> Sign up </h3>
+    <h3 align = "center"> Iscriviti </h3>
     <div class = "form-group">
         <label for = "email"> Indirizzo email</label>
-        <input type = "email" 
-        class = "form-control" 
-        id = "email" 
-        name = "email" 
-        placeholder = "Inserisci email">
-    </div>
-
-    <div class = "form-group">
+        <input type = "email" class = "form-control" id = "email" name = "email" placeholder = "Inserisci email">
+        
         <label for = "firstname"> Nome utente</label>
-        <input type = "text" 
-        class = "form-control" 
-        id = "firstname" 
-        name = "firstname" 
-        placeholder = "Inserisci nome utente">
-    </div>
-
-    <div class = "form-group">
-        <label for = "password1"> Password </label>
-        <input type = "password" 
-        class = "form-control" 
-        id = "password1" 
-        name = "password1" 
-        placeholder = "Inserisci password">
-    </div>
-
-    <div class = "form-group">
+        <input type = "text" class = "form-control" id = "firstname" name = "firstname" placeholder = "Inserisci nome utente">
+        
+        <label for = "password1"> Password </label> 
+        <input type = "password" class = "form-control" id = "password1" name = "password1" placeholder = "Inserisci password">
+        
         <label for = "password2"> Password (conferma)</label>
-        <input type = "password" 
-        class = "form-control" 
-        id = "password2" 
-        name = "password2" 
-        placeholder = "conferma password">
+        <input type = "password" class = "form-control" id = "password2" name = "password2" placeholder = "conferma password">
+        
+        <button type = "submit" class="btn btn-primary"> Invia </button>
     </div>
 
-    <br />
-    <button type = "submit" class="btn btn-primary"> Invia </button>
+    <br/>
+    
 </form>
 {% endblock %}

@@ -2,28 +2,19 @@
 {% block title %} Login {% endblock %}
 
 {% block content %}
-<h1> this is Login page </h1>
+<h1> Pagina di login </h1>
 <form method="post">
     <h3 align = "center"> Login </h3>
     <div class = "form-group">
-        <label for = "email"> Indirizzo email</label>
-        <input type = "email" 
-        class = "form-control" 
-        id = "email" 
-        name = "email" 
-        placeholder = "Inserisci email">
-    </div>
+        <label for = "email"> Indirizzo Email</label>
+        <input type = "email"  class = "form-control" id = "email" name = "email" placeholder = "Inserisci email">
 
-    <div class = "form-group">
         <label for = "password"> Password </label>
-        <input type = "password" 
-        class = "form-control" 
-        id = "password" 
-        name = "password" 
-        placeholder = "Inserisci password">
-    </div>
+        <input type = "password" class = "form-control" id = "password" name = "password" placeholder = "Inserisci password">
 
-    <br />
-    <button type = "submit" class="btn btn-primary"> Accedi </button>
+        <button type = "submit" class="btn"> Accedi </button>
+    </div>
+    <br/>
+    
 </form>
 {% endblock %}

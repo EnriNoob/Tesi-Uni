@@ -1,0 +1,49 @@
+.menu {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+.menu h1{
+    font-size: 30px;
+}
+.menuitems {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 10%;
+    margin: 10px 10px 10px 10px;
+    padding: 10px 10px 10px 10px;
+
+}
+.menuitems:hover{
+    border: 1px solid red;
+}
+
+a.fill-div {
+    text-decoration: none;
+    text-transform: none;
+    text-decoration-color: none;
+}
+
+a:link {
+    color: black;
+  }
+  
+a:visited {
+    color: black;
+}
+
+a:active {
+    color: black;
+}
+  
+  /* mouse over link 
+  a:hover {
+    color: black;
+  }
+   selected link 
+  
+*/
