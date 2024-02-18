@@ -1,0 +1,32 @@
+.form-main{
+    background-color: red;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+}
+.form-main form{
+    width: 20%;
+}
+.form-elements{
+    margin: 10px 10px 10px 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+.form-elements #tiposlot{
+    width: 27%;
+}
+.form-input{
+    display: flex;
+    justify-content: center;
+}
+input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+  }
+
+  input[type="time"]::-webkit-inner-spin-button,
+  input[type="time"]::-webkit-clear-button {
+    display: none;
+  }

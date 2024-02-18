@@ -3,6 +3,7 @@ from .models import User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
+import datetime
 
 
 auth = Blueprint('auth',__name__)
@@ -66,6 +67,30 @@ def sign_up():
 
 
     return render_template("sign_up.html", user = current_user)
-@auth.route('/ccalendar')
+@auth.route('/ccalendar', methods=['GET', 'POST'])
 def create_calendar():
-    return render_template("ccalendar.html", user = current_user)
+    if request.method == 'POST':
+        #flash('metodo post avvenuto con successo')
+        starthour = request.form.get("orainizio")
+        endhour = request.form.get('orafine')
+        typeslot = request.form.get('tiposlot')
+        print(starthour,endhour,typeslot)
+ 
+        orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:]),0)
+        orafine = datetime.time(int(endhour[0:2]),int(endhour[3:]),0)
+    
+        secondiInizio = orainizio.hour * 3600 + orainizio.minute * 60 
+        secondiFine = orafine.hour * 3600 + orafine.minute * 60
+
+        print(secondiInizio)
+        print(secondiFine)
+
+        if starthour == "" or endhour == "" or typeslot == "":
+            flash('attenzione, non hai inserito uno di questi dati!')
+            return render_template("ccalendar.html", user=current_user)
+        elif secondiInizio > secondiFine:
+            flash('attenzione, hai inserito l\'ora di inizio maggiore dell\'ora di fine!')
+            return render_template("ccalendar.html", user=current_user)
+        return redirect(url_for('views.home'))
+    else:
+        return render_template("ccalendar.html", user=current_user)

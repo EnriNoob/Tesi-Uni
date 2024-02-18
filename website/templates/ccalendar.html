@@ -3,8 +3,32 @@
 
 {% block content %}
 <div class="form-main">
-    
+    <form method="post">
+        <div class="form-elements">
+            <label for="orainizio">ora inizio</label>
+            <input type="time" list="times" id="orainizio" name="orainizio" step="900" min="09:00" max="20:00">
+        </div>
+        <div class="form-elements">
+            <label for="orafine"">ora fine</label>
+            <input type="time" list="times" id="orafine" name="orafine" step="900" min="09:00" max="20:00">
+        </div>
+        <div class="form-elements">
+            <label for="tiposlot">tipi di slot</label>
+            <input type="number" id="tiposlot" name="tiposlot" min="30" max="90" step="30">
+        </div>
+        <div class="form-input">
+            <input type="submit" value="genera calendario">
+        </div>
+        <div class="calendar">
 
+        </div>
+    </form>
 </div>
+<script>
+    function generateCalendar(){
+        document.getElementById("button")
+        console.log("sadifjaoidgjerow");
+    }
+</script>
 
 {% endblock %}
