@@ -75,6 +75,10 @@ def create_calendar():
         endhour = request.form.get('orafine')
         typeslot = request.form.get('tiposlot')
         print(starthour,endhour,typeslot)
+
+        if starthour == "" or endhour == "" or typeslot == "":
+            flash('attenzione, non hai inserito uno di questi dati!')
+            return render_template("ccalendar.html", user=current_user)
  
         orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:]),0)
         orafine = datetime.time(int(endhour[0:2]),int(endhour[3:]),0)
@@ -85,12 +89,11 @@ def create_calendar():
         print(secondiInizio)
         print(secondiFine)
 
-        if starthour == "" or endhour == "" or typeslot == "":
-            flash('attenzione, non hai inserito uno di questi dati!')
-            return render_template("ccalendar.html", user=current_user)
-        elif secondiInizio > secondiFine:
+        if secondiInizio > secondiFine:
             flash('attenzione, hai inserito l\'ora di inizio maggiore dell\'ora di fine!')
             return render_template("ccalendar.html", user=current_user)
-        return redirect(url_for('views.home'))
+        else:
+            return redirect(url_for('views.home'))
+        
     else:
         return render_template("ccalendar.html", user=current_user)
