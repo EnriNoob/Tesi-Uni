@@ -3,10 +3,12 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
-    <link rel="stylesheet" href="{{ url_for('static', filename='baseStyle.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='loginStyle.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='homeStyle.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='ccalendarStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/baseStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/loginStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/homeStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/ccalendarStyle.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/addUserStyle.css') }}">
+
     <script src="https://kit.fontawesome.com/18247ee54d.js" crossorigin="anonymous"></script>
     <title>{% block title %}Home{% endblock %}</title>
   </head>
@@ -14,7 +16,7 @@
     <nav class="navbared">
           <ul>
             {% if user.is_authenticated %}
-            <li><a class="nav-item nav-link" id="home" href="/home">Home</a></li>
+            <li><a class="nav-item nav-link" id="home" href="/">Home</a></li>
             <li><a class="nav-item nav-link" id="logout" href="/logout">Logout</a></li>
             {% else %}
             <li><a class="nav-item nav-link" id="login" href="/login">Login</a></li>

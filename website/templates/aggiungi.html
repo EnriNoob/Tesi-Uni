@@ -1,0 +1,39 @@
+{% extends "base.html"%}
+{% block title %} Aggiungi utente {% endblock %}
+
+{% block content %}
+<div class="main-div">
+    <form method="post">
+        <label for="nome">Nome</label>
+        <input type="text" name="nome" id="nome">
+
+        <label for="cognome">Cognome</label>
+        <input type="text" name="cognome" id="cognome">
+        <div class="datebirth">
+            <label for="giorno">Giorno di nascita</label>
+            <input type="number" name="giorno" id="giorno">
+
+            <label for="mese">Mese di nascita</label>
+            <input type="number" name="mese" id="mese">
+
+            <label for="anno">Anno di nascita</label>
+            <input type="number" name="anno" id="anno">
+        </div>
+
+        <label>livello dell'atleta</label>
+        <input type="checkbox" name="livello" id="livello">
+        <label for="">agonistico</label>
+
+        <input type="checkbox" name="livello" id="livello">
+        <label for="">dilettante</label>
+
+        <div>
+            <label for="">numero di allenamenti</label>
+            <input type="number">
+
+        </div>
+        <div class="checkCalendar"></div>
+
+    </form>  
+</div>
+{% endblock %}

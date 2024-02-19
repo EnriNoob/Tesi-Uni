@@ -50,6 +50,10 @@ function generateCalendar(){
                 }
             }
         }
+        formSubmit = document.createElement("input")
+        formSubmit.setAttribute("type", "submit")
+        formSubmit.style.display= "center"
         div.appendChild(table)
+        div.appendChild(formSubmit)
     }   
 }
