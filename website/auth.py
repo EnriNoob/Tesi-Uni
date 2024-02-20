@@ -21,7 +21,7 @@ def login():
         if user:
             if check_password_hash(user.password,password):
                 flash('login avvenuto con successo')
-                login_user(user, remember=True)
+                login_user(user, remember=False)
                 return redirect(url_for('views.home'))
             else:
                 flash('password non corretta', category = 'error')
@@ -97,3 +97,7 @@ def create_calendar():
         
     else:
         return render_template("ccalendar.html", user=current_user)
+
+@auth.route('/aggiungi', methods = ['GET', 'POST'])
+def create_user():
+    return render_template("aggiungi.html", user=current_user)

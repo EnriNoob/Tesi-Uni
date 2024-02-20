@@ -31,9 +31,15 @@
 }
 input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
-  }
+}
 
-  input[type="time"]::-webkit-inner-spin-button,
-  input[type="time"]::-webkit-clear-button {
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-clear-button {
     display: none;
-  }
+}
+
+input[type="checkbox"]:checked:after {
+    /* Heres your symbol replacement */
+    content: "X";
+    color: #fff;
+}
