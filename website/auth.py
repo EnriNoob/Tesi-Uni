@@ -1,5 +1,7 @@
+from calendar import Calendar
+from tabnanny import check
 from flask import Blueprint, render_template, request, flash, redirect, url_for
-from .models import User
+from .models import Calendario, User
 from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
@@ -74,7 +76,9 @@ def create_calendar():
         starthour = request.form.get("orainizio")
         endhour = request.form.get('orafine')
         typeslot = request.form.get('tiposlot')
-        print(starthour,endhour,typeslot)
+        checkbox = request.form.get('suka')
+        print(starthour,endhour,typeslot,checkbox)
+
 
         if starthour == "" or endhour == "" or typeslot == "":
             flash('attenzione, non hai inserito uno di questi dati!')
@@ -82,7 +86,11 @@ def create_calendar():
  
         orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:]),0)
         orafine = datetime.time(int(endhour[0:2]),int(endhour[3:]),0)
-    
+
+        new_calendar = Calendario(oremattina = str(orainizio) , orepomeriggio= str(orafine) ,numeroslot=int(typeslot))
+        db.session.add(new_calendar)
+        db.session.commit()
+
         secondiInizio = orainizio.hour * 3600 + orainizio.minute * 60 
         secondiFine = orafine.hour * 3600 + orafine.minute * 60
 
