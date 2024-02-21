@@ -1,4 +1,5 @@
 from calendar import Calendar
+from os import name
 from tabnanny import check
 from flask import Blueprint, render_template, request, flash, redirect, url_for
 from .models import Calendario, User
@@ -7,15 +8,20 @@ from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 import datetime
 
+# un blueprint è un modo di organizzare un gruppo di view correlati, quindi invece di registrare view direttamente all'applicazione
+# essi vengono registrati nel blueprint
+# questo blueprint è per i blog post functions
+# questo server per l'autenticazione insomma
+access = Blueprint('access',__name__, template_folder='templates/access')
 
-auth = Blueprint('auth',__name__)
-
-
-@auth.route('/login', methods = ['GET', 'POST'])
+# aut.route associa l'url /login con la funzione view login in riga 18
+# quando flask riceve questo url la view corrispondente si attiva e manda una risposta nel return 
+# (in questo caso manda alla home se il login è avvenuto con successo, se no renderizza login di nuovo)
+@access.route('/', methods = ['GET', 'POST'])
 def login():
-    #data = request.form
-    #print(data)
+    # se l'utente ha inviato un form (POST) dobbiamo verificare che il metodo della risposta e POST
     if request.method == 'POST':
+        # request.form è un0 speciale dict mappando chiavi del form inviato con valori
         email = request.form.get('email')
         password = request.form.get('password')
         user = User.query.filter_by(email=email).first()
@@ -24,7 +30,7 @@ def login():
             if check_password_hash(user.password,password):
                 flash('login avvenuto con successo')
                 login_user(user, remember=False)
-                return redirect(url_for('views.home'))
+                return redirect(url_for('dashboard.home', name = user.first_name))
             else:
                 flash('password non corretta', category = 'error')
         else:
@@ -32,13 +38,13 @@ def login():
 
     return render_template("login.html", user=current_user)
 
-@auth.route('/logout', methods = ['GET', 'POST'])
+@access.route('/logout', methods = ['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
-    return redirect(url_for('auth.login'))
+    return redirect(url_for('access.login'))
 
-@auth.route('/sign-up', methods = ['GET', 'POST'])
+@access.route('/sign-up', methods = ['GET', 'POST'])
 def sign_up():
     if request.method == 'POST':
         email = request.form.get('email')
@@ -58,54 +64,17 @@ def sign_up():
         elif (len(password1)) < 6:
             flash('password troppa corta (deve essere maggiore di 5)', category='error')
         else:
-            # accesso al database
+            # inserimento di un record (INSERT INTO user...)= nella tabella user 
             new_user = User(email = email, first_name = firstname, password = generate_password_hash(password1, method='pbkdf2'))
             db.session.add(new_user)
+            # commit per salvare le modifiche
             db.session.commit()
-            login_user(new_user, remember=True)
+            login_user(new_user, remember=False)
             flash('account creato con successo', category='success')
-
-            return redirect(url_for('views.home'))
+            # una volta creato l'account dobbiamo far reidirezionare l'admin al login
+            # url_for genera l'url per la login view
+            # redirect genera un reindirizzamento risposta all'url generato 
+            return redirect(url_for('access.login'))
 
 
     return render_template("sign_up.html", user = current_user)
-@auth.route('/ccalendar', methods=['GET', 'POST'])
-def create_calendar():
-    if request.method == 'POST':
-        #flash('metodo post avvenuto con successo')
-        starthour = request.form.get("orainizio")
-        endhour = request.form.get('orafine')
-        typeslot = request.form.get('tiposlot')
-        checkbox = request.form.get('suka')
-        print(starthour,endhour,typeslot,checkbox)
-
-
-        if starthour == "" or endhour == "" or typeslot == "":
-            flash('attenzione, non hai inserito uno di questi dati!')
-            return render_template("ccalendar.html", user=current_user)
- 
-        orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:]),0)
-        orafine = datetime.time(int(endhour[0:2]),int(endhour[3:]),0)
-
-        new_calendar = Calendario(oremattina = str(orainizio) , orepomeriggio= str(orafine) ,numeroslot=int(typeslot))
-        db.session.add(new_calendar)
-        db.session.commit()
-
-        secondiInizio = orainizio.hour * 3600 + orainizio.minute * 60 
-        secondiFine = orafine.hour * 3600 + orafine.minute * 60
-
-        print(secondiInizio)
-        print(secondiFine)
-
-        if secondiInizio > secondiFine:
-            flash('attenzione, hai inserito l\'ora di inizio maggiore dell\'ora di fine!')
-            return render_template("ccalendar.html", user=current_user)
-        else:
-            return redirect(url_for('views.home'))
-        
-    else:
-        return render_template("ccalendar.html", user=current_user)
-
-@auth.route('/aggiungi', methods = ['GET', 'POST'])
-def create_user():
-    return render_template("aggiungi.html", user=current_user)

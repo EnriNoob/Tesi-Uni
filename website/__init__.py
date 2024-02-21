@@ -15,11 +15,12 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_NAME}'
     db.init_app(app) # inizializzazione del database dando l'app di flask
 
-    from .views import views
-    from .auth import auth
-
-    app.register_blueprint(views, url_prefix='/')
-    app.register_blueprint(auth, url_prefix='/')
+    from .dashboard import dashboard
+    from .access import access
+    # registriamo i blueprint
+    app.register_blueprint(access, url_prefix='/')
+    app.register_blueprint(dashboard, url_prefix='/home')
+   
 
     from .models import User
 
@@ -27,7 +28,7 @@ def create_app():
         db.create_all()
         
         login_manager = LoginManager()
-        login_manager.login_view = 'auth.login'
+        login_manager.login_view = 'access.login'
         login_manager.init_app(app)
 
         @login_manager.user_loader

@@ -43,3 +43,6 @@ input[type="checkbox"]:checked:after {
     content: "X";
     color: #fff;
 }
+#tdata{
+    text-align: center;
+}

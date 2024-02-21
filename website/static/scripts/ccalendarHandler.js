@@ -42,6 +42,7 @@ function generateCalendar(){
                 if (i == 0) {
                     const tdata = trow.insertCell()
                     tdata.appendChild(document.createTextNode(giorni[j]))
+                    tdata.setAttribute("id","tdata")
                 } 
                 // in tutte le altre righe metto gli orari e i checkbox
                 else {
