@@ -55,12 +55,29 @@ def create_calendar():
             split = check.rsplit('-')
             buckets_days[int(split[1])].append(split[0])
             
-        for day in buckets_days:
+        print(buckets_days)
+        for d,day in enumerate(buckets_days):
             # controlliamo se l'utente in un giorno abbia eliminato uno solo slot
             if len(day) == 1:
-                flash(f'attenzione, hai inserito nel giorno{day} un solo slot!')
+                flash(f'attenzione, hai escluso nel giorno{day} un solo slot!')
                 return render_template("ccalendar.html", user=current_user)
-            
+            else:
+                for x,slot in enumerate(day) :
+                    print(x,slot)
+                    if x == 0:
+                        if int(day[x + 1]) - int(slot) != 1:
+                            flash(f'attenzione, hai escluso nel giorno{d}={day} uno slot da mezz\'ora da solo! ovvero{slot}')
+                            return render_template("ccalendar.html", user=current_user)
+                    elif x == len(day) - 1:
+                        if int(slot) - int(day[x - 1]) != 1:
+                            flash(f'attenzione, hai escluso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
+                            return render_template("ccalendar.html", user=current_user)
+                        
+                    elif (int(day[x + 1]) - int(slot)) != 1 and (int(slot) - int(day[x - 1])) != 1:
+                            flash(f'attenzione, hai escluso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
+                            return render_template("ccalendar.html", user=current_user)
+                            
+        print("è andato tutto bene")
         sloteliminati = ""
         print(buckets_days)
         for x,day in enumerate(buckets_days):
