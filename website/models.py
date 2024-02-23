@@ -12,6 +12,7 @@ class Calendario(db.Model):
     oremattina = db.Column(db.String(5))
     orepomeriggio = db.Column(db.String(5))
     numeroslot = db.Column(db.Integer)
+    sloteliminati = db.Column(db.String(150))
     allievo = db.relationship("Allievo", backref='calendario', uselist = True)
 
 class Allievo(db.Model):

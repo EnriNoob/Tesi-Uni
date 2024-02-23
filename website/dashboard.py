@@ -43,18 +43,34 @@ def create_calendar():
         starthour = request.form.get("orainizio")
         endhour = request.form.get('orafine')
         typeslot = request.form.get('tiposlot')
-        checkbox = request.form.get('suka')
-        print(starthour,endhour,typeslot,checkbox)
-
-
         if starthour == "" or endhour == "" or typeslot == "":
             flash('attenzione, non hai inserito uno di questi dati!')
             return render_template("ccalendar.html", user=current_user)
- 
+        
+        print(starthour,endhour,typeslot)
+        sus = request.form.getlist('check')
+        buckets_days = [[] for x in range (6)]
+        
+        for check in sus:
+            split = check.rsplit('-')
+            buckets_days[int(split[1])].append(split[0])
+            
+        for day in buckets_days:
+            # controlliamo se l'utente in un giorno abbia eliminato uno solo slot
+            if len(day) == 1:
+                flash(f'attenzione, hai inserito nel giorno{day} un solo slot!')
+                return render_template("ccalendar.html", user=current_user)
+            
+        sloteliminati = ""
+        print(buckets_days)
+        for x,day in enumerate(buckets_days):
+            for slots in day:
+                sloteliminati += f"{x}-{slots}, "
+
         orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:]),0)
         orafine = datetime.time(int(endhour[0:2]),int(endhour[3:]),0)
 
-        new_calendar = Calendario(oremattina = str(orainizio) , orepomeriggio= str(orafine) ,numeroslot=int(typeslot))
+        new_calendar = Calendario(oremattina = str(orainizio) , orepomeriggio= str(orafine) ,numeroslot=int(typeslot), sloteliminati = sloteliminati)
         db.session.add(new_calendar)
         db.session.commit()
 
@@ -68,8 +84,7 @@ def create_calendar():
             flash('attenzione, hai inserito l\'ora di inizio maggiore dell\'ora di fine!')
             return render_template("ccalendar.html", user=current_user)
         else:
-            return redirect(url_for('dashboard.home',name = admin_name))
-        
+            return redirect(url_for('dashboard.home',name = admin_name))  
     else:
         return render_template("ccalendar.html", user=current_user)
 
