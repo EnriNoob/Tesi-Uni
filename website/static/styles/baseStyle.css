@@ -26,3 +26,6 @@ body {
 .navbared li last-child {
     border-right: none;
 }
+.container h1{
+    text-align: center;
+}

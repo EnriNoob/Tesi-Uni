@@ -1,0 +1,30 @@
+.main-div{
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+}
+.form-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: red;
+    width: fit-content;
+    
+}
+.form-elements input,select{
+    margin: 0px 10px 0px 10px;
+}
+.right{
+    background-color: blue;
+}
+.calendar-div{
+    border-bottom: 1px solid black;
+    padding-top: 1%;
+}
+.calendar-div label{
+    padding: 1%;
+    border-right: 1px solid black;
+    
+}
+

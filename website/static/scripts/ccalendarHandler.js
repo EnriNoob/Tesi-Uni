@@ -16,11 +16,14 @@ function generateCalendar(){
 
     console.log(startOre,startMinuti);
     console.log(endOre,endMinuti);
-    /*
-    const oraMezzogiorno = 12 * 3600
-    const oraInizioPomeriggio = 14 * 3600
-    */
     
+    const inizio = startOre * 3600 + startMinuti * 60
+    const fine = endOre * 3600 + endMinuti * 60
+
+    if (inizio > fine) {
+        alert("hai inserito l'orario di fine giornata maggiore di quello di inizio giornata")
+        return;
+    } 
     var secondi_giorno = (endOre * 3600 + endMinuti *60) - (startOre * 3600 + startMinuti * 60)
 
     console.log("secondi durate il giorno ", secondi_giorno);
@@ -104,7 +107,6 @@ function generateCalendar(){
         div.appendChild(table)
         div.appendChild(formSubmit)
     } 
-    
 }
 function checkSingleSlot(){
     console.log("fgjnihwghiwe");
