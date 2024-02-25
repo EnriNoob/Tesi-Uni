@@ -24,4 +24,5 @@ class Allievo(db.Model):
     annonascita = db.Column(db.Integer)
     livello = db.Column(db.String(150))
     numeroallenamenti = db.Column(db.Integer)
+    slotdisponibilita = db.Column(db.String(150))
     id_calendario = db.Column(db.Integer, db.ForeignKey('calendario.id'))

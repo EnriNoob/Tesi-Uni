@@ -2,9 +2,11 @@
 {% block title %} Aggiungi utente {% endblock %}
 
 {% block content %}
+<h1>Aggiungi allievo!</h1>
+<form method="post">
 <div class="main-div">
     <div class="left">
-        <form method="post">
+        
             <div class="form-container">
                 <div class ="form-elements">
                     <label for="nome">Nome</label>
@@ -210,22 +212,34 @@
                         <option value="4">4</option>
                     </select>
                 </div>
-                <div class="choseCalendar"></div>
-            </div>
-        </form>  
-    </div>
-    <div class="right">
-            {% for cal in calendar_list%}
-                <div class="calendar-div">
-                    <input type="checkbox" id="selectedCalendar">
-                    <label>{{cal.id}}</label>
-                    <label>{{cal.oremattina}}</label>
-                    <label>{{cal.orepomeriggio}}</label>
-                    <label>{{cal.numeroslot}}</label>
-                    <label>{{cal.sloteliminati}}</label>
-                </div>  
-            {% endfor %}
+            </div> 
     </div>
 </div>
+<div class="calendar-list">
+    <table id="table-calendars">
+        <tr>
+            <th></th>
+            <th>Id</th>
+            <th>Ora inizio</th>
+            <th>Ora fine</th>
+            <th>minuti degli slot</th>
+            <th>sloteliminati</th>
+        </tr>
+    {% for cal in calendar_list%}
+        <tr id="tr{{loop.index}}" name="tr{{loop.index}}">
+            <td><input type="checkbox" id="{{loop.index}}" name="{{loop.index}}" class="checkbox-calendar" onclick="uncheck_other_checkboxes(this)"></td>
+            <td>{{loop.index}}</td>
+            <td>{{cal.oremattina}}</td>
+            <td>{{cal.orepomeriggio}}</td>
+            <td>{{cal.numeroslot}}</td>
+            <td>{{cal.sloteliminati}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+<div class="rigth" id="rigth">
+</div>
+<input type="submit">
+</form>
 <script src="{{ url_for('static', filename='scripts/addUserHandler.js')}}"></script>
 {% endblock %}

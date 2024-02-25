@@ -10,6 +10,8 @@
     align-items: flex-start;
     background-color: red;
     width: fit-content;
+    border-radius: 20px;
+    margin: 10px;
     
 }
 .form-elements input,select{
@@ -18,13 +20,23 @@
 .right{
     background-color: blue;
 }
-.calendar-div{
-    border-bottom: 1px solid black;
-    padding-top: 1%;
+.calendar-list{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
-.calendar-div label{
-    padding: 1%;
-    border-right: 1px solid black;
-    
+.calendar-list table{
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    border-radius: 20px;
+    margin: 10px;
 }
-
+.calendar-list table th,td{
+    border: 1px solid #000000;
+    text-align: left;
+    padding: 8px;   
+}
+tr{
+    background-color: rgb(8, 202, 8);
+}
