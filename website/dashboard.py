@@ -15,9 +15,6 @@ from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 import datetime
 
-
-
-
 dashboard = Blueprint('dashboard',__name__,template_folder="templates/dashboard")
 admin_name = ""
 
@@ -112,6 +109,7 @@ def create_calendar():
 @dashboard.route('/aggiungi', methods = ['GET', 'POST'])
 @login_required
 def create_user():
+
     if request.method == 'POST':
         nome = request.form.get("nome")
         cognome = request.form.get("cognome")
@@ -121,11 +119,28 @@ def create_user():
         genere = request.form.get("genere")
         agonistico = request.form.get("agonistico")
         dilettante = request.form.get("dilettante")
+        if agonistico == None:
+            livello = "dilettante"
+        else:
+            livello = "agonistico"
         numero_allenamenti = request.form.get("allenamenti")
-        id_calendario = request.form.get("tdata")
+        id_calendario = request.form.get("idcalendar")
         d = request.form.getlist("check")
 
-        print(nome,cognome,giorno_nascita,mese_nascita, anno_nascita, genere, agonistico, dilettante, numero_allenamenti, id_calendario, d)
+        print(nome,cognome,giorno_nascita,mese_nascita, anno_nascita, genere, livello, numero_allenamenti, id_calendario, d)
+        sloteDisponibili = ""
+        buckets_days = [[] for x in range (6)]
+        # inserisco nei bucket gli slot eliminati
+        for check in d:
+            # spezzo es. '0-1'
+            split = check.rsplit('-')
+            buckets_days[int(split[0])].append(split[1])
+
+        # devo mettere in una stringa gli slot eliminati perchè il campo sloteliminati della tabella calendario accetta stringhe e non liste
+        for x,day in enumerate(buckets_days):
+            for slots in day:
+                sloteDisponibili += f"{x}-{slots},"
+        new_allievo = Allievo(nome=nome, cognome=cognome, giornonascita=int(giorno_nascita), mesenascita=int(mese_nascita), annonascita=int(anno_nascita),livello = livello, numeroallenamenti=numero_allenamenti, slotdisponibilita=sloteDisponibili, id_calendario= int(id_calendario))
         '''
         buckets_days = [[] for x in range (6)]
         # inserisco nei bucket gli slot eliminati
@@ -171,9 +186,11 @@ def create_user():
                 sloteDisponibili += f"{x}-{slots},"
         #new_allievo = Allievo(nome=nome, cognome=cognome, giornonascita=int(giorno_nascita), mesenascita=int(mese_nascita), annonascita=int(anno_nascita), numeroallenamenti=numero_allenamenti, slotdisponibilita=sloteDisponibili, id_calendario=)
         '''
-        return "sus"
+        db.session.add(new_allievo)
+        db.session.commit()
+        flash("aggiunta dell'utente andato a buon fine!")
+        return redirect(url_for('dashboard.home',name = admin_name)) 
     else:
-
         calendar_list = Calendario.query.all()
         for cal in calendar_list:
             print(cal.id,cal.oremattina,cal.orepomeriggio,cal.numeroslot,cal.sloteliminati)

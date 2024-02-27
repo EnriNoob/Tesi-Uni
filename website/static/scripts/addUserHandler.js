@@ -66,8 +66,7 @@ function insert_availability(input,trname){
             if (i == 0) {
                 const tdata = trow.insertCell()
                 tdata.appendChild(document.createTextNode(giorni[j]))
-                tdata.setAttribute("id","tdata")
-                tdata.setAttribute("name",trname)
+                
             } 
             // in tutte le altre righe metto gli orari e i checkbox
             else {
@@ -117,7 +116,8 @@ function insert_availability(input,trname){
         }
     }
     div.appendChild(table)
-
+    document.getElementById("idcalendar").value = idCalendar
+    
     console.log("lunghezza ",slotEliminatiArray.length);
     for (let i = 0; i < slotEliminatiArray.length; i++) {
         document.getElementById(slotEliminatiArray[i]).disabled = true
