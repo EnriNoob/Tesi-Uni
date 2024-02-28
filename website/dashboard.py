@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
+from sqlalchemy import null
 from . import db
 from .models import Allievo, User
 from .models import Calendario
@@ -72,7 +73,6 @@ def create_calendar():
             else:
                 # scorriamo nei slot eliminati nei vari giorni
                 for x,slot in enumerate(day) :
-                    print(x,slot)
                     # caso in cui si parte dal primo slot eliminato nella lista (si controlla soltanto lo slot successivo)
                     if x == 0:
                         if int(day[x + 1]) - int(slot) != 1:
@@ -109,90 +109,101 @@ def create_calendar():
 @dashboard.route('/aggiungi', methods = ['GET', 'POST'])
 @login_required
 def create_user():
-
+    calendar_list = Calendario.query.all()
     if request.method == 'POST':
+        # prendo i dati dal form 
         nome = request.form.get("nome")
         cognome = request.form.get("cognome")
         giorno_nascita = request.form.get("giorno")
         mese_nascita = request.form.get("mese")
         anno_nascita = request.form.get("anno")
         genere = request.form.get("genere")
-        agonistico = request.form.get("agonistico")
-        dilettante = request.form.get("dilettante")
-        if agonistico == None:
-            livello = "dilettante"
-        else:
-            livello = "agonistico"
+        livello = request.form.get("livello")
         numero_allenamenti = request.form.get("allenamenti")
         id_calendario = request.form.get("idcalendar")
         d = request.form.getlist("check")
-
+        # controllo se l'utente non abbia inserito nome o cognome
+        if nome == "" or cognome == "":
+            flash("non hai inserito nome oppure cognome")
+            return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+        
         print(nome,cognome,giorno_nascita,mese_nascita, anno_nascita, genere, livello, numero_allenamenti, id_calendario, d)
-        sloteDisponibili = ""
+        slotDisponibili = ""
         buckets_days = [[] for x in range (6)]
-        # inserisco nei bucket gli slot eliminati
+        # inserisco nei bucket gli slot in cui gli studenti sono disponibili a fare allenamento
         for check in d:
             # spezzo es. '0-1'
             split = check.rsplit('-')
             buckets_days[int(split[0])].append(split[1])
-
-        # devo mettere in una stringa gli slot eliminati perchè il campo sloteliminati della tabella calendario accetta stringhe e non liste
-        for x,day in enumerate(buckets_days):
-            for slots in day:
-                sloteDisponibili += f"{x}-{slots},"
-        new_allievo = Allievo(nome=nome, cognome=cognome, giornonascita=int(giorno_nascita), mesenascita=int(mese_nascita), annonascita=int(anno_nascita),livello = livello, numeroallenamenti=numero_allenamenti, slotdisponibilita=sloteDisponibili, id_calendario= int(id_calendario))
-        '''
-        buckets_days = [[] for x in range (6)]
-        # inserisco nei bucket gli slot eliminati
-        for check in d:
-            # spezzo es. '0-1'
-            split = check.rsplit('-')
-            buckets_days[int(split[1])].append(split[0])
-
         print(buckets_days)
-
+        # controllo che gli studenti abbiano messo disponibilità giuste (no slot da mezz'ora da solo, minimo due (e multipli di 2) per i I love tennis e sat, minimo 3 per gli ago e pre ago)
         for d,day in enumerate(buckets_days):
             # controlliamo se l'utente in un giorno abbia eliminato uno solo slot
             if len(day) == 1:
-                flash(f'attenzione, hai escluso nel giorno{day} un solo slot!')
-                return render_template("ccalendar.html", user=current_user)
-            # se no dobbiamo controllare che abbia eliminato uno solo slot in un giorno con più slot eliminati
+                flash(f'attenzione, hai dato disponibilità nel giorno{day} un solo slot!')
+                return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+            # se no dobbiamo controllare che abbia imesso uno solo slot da solo in un giorno in cui ha messo più slot disponibili
             else:
-                # scorriamo nei slot eliminati nei vari giorni
+                # scorriamo nei slot disponibli nei vari giorni
                 for x,slot in enumerate(day) :
-                    print(x,slot)
-                    # caso in cui si parte dal primo slot eliminato nella lista (si controlla soltanto lo slot successivo)
+                    # caso in cui si parte dal primo slot disponibile del giorno (si controlla soltanto lo slot successivo)
                     if x == 0:
                         if int(day[x + 1]) - int(slot) != 1:
-                            flash(f'attenzione, hai escluso nel giorno{d}={day} uno slot da mezz\'ora da solo! ovvero{slot}')
-                            return render_template("ccalendar.html", user=current_user)
-                    # caso in cui si arriva all'ultimo slot eliminato nella lista (si controlla soltatno lo slot precedente)
+                            flash(f'attenzione, hai immesso nel giorno{d}={day} uno slot da mezz\'ora da solo! ovvero{slot}')
+                            return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                    # caso in cui si arriva all'ultimo slot disponibile nel giorno (si controlla soltatno lo slot precedente)
                     elif x == len(day) - 1:
                         if int(slot) - int(day[x - 1]) != 1:
-                            flash(f'attenzione, hai escluso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
-                            return render_template("ccalendar.html", user=current_user)
-                    # caso in cui si va controllare per ogni slot eliminato quello precedente e quello successivo
+                            flash(f'attenzione, hai immesso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
+                            return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                    # caso in cui si va controllare per gli slot intermedi quello precedente e quello successivo
                     # se la distanza di hamming non è 1 in entrambi i casi significa che la distanza tra lo slot e quello successivo o quello precedente non è 1    
                     elif (int(day[x + 1]) - int(slot)) != 1 and (int(slot) - int(day[x - 1])) != 1:
                             flash(f'attenzione, hai escluso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
-                            return render_template("ccalendar.html", user=current_user)
-                            
+                            render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+        count60 = 0
+        count90 = 0
+        # switch 0 -> 60, switch 1 -> 90
+        switch = 0 
+        for d,day in enumerate(buckets_days):
+            # controllo degli allievi che fanno un'ora di allenamento (ovvero controllo che in un giorno abbiamo messo minimo 2 slot disponibili)
+            if livello == "I love tennis" or livello == "sat under 8" or livello == "sat under 10" or livello == "sat under 12"\
+                    or livello == "sat under 14" or livello == "sat under 16" or livello == "sat under 18" :
+                switch = 0
+                if len(day) == 0:
+                    continue
+                if len(day) == 1:
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                else:
+                    count60 += 1
+            # gli ago e i pre ago sono allievi che fanno un'ora e mezza di allenamento (minimo 3 slot disponibili in un giorno)
+            else :
+                switch = 1
+                if len(day) == 0:
+                    continue
+                if len(day) < 3:
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                else:
+                    count90 += 1
+        if switch == 0:
+            if count60 < int(numero_allenamenti):
+                flash("(60) il numero di slot inseriti non soddisfa il numero di allenamenti a settimana dell'allievo")
+                return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+        if switch == 1:
+            if count90 < int(numero_allenamenti):
+                flash("(90) il numero di slot inseriti non soddisfa il numero di allenamenti a settimana dell'allievo")
+                return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+            
         print("è andato tutto bene")
-        sloteDisponibili = ""
-        print(buckets_days)
-        # devo mettere in una stringa gli slot eliminati perchè il campo sloteliminati della tabella calendario accetta stringhe e non liste
+        # devo mettere in una stringa gli slot disponibili perchè il campo sloteliminati della tabella calendario accetta stringhe e non liste
         for x,day in enumerate(buckets_days):
             for slots in day:
-                sloteDisponibili += f"{x}-{slots},"
-        #new_allievo = Allievo(nome=nome, cognome=cognome, giornonascita=int(giorno_nascita), mesenascita=int(mese_nascita), annonascita=int(anno_nascita), numeroallenamenti=numero_allenamenti, slotdisponibilita=sloteDisponibili, id_calendario=)
-        '''
+                slotDisponibili += f"{x}-{slots},"
+
+        new_allievo = Allievo(nome=nome, cognome=cognome, giornonascita=int(giorno_nascita), mesenascita=int(mese_nascita), annonascita=int(anno_nascita),livello = livello, numeroallenamenti=numero_allenamenti, slotdisponibilita=slotDisponibili, id_calendario= int(id_calendario))
         db.session.add(new_allievo)
         db.session.commit()
         flash("aggiunta dell'utente andato a buon fine!")
         return redirect(url_for('dashboard.home',name = admin_name)) 
     else:
-        calendar_list = Calendario.query.all()
-        for cal in calendar_list:
-            print(cal.id,cal.oremattina,cal.orepomeriggio,cal.numeroslot,cal.sloteliminati)
-        
         return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)

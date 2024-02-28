@@ -3,10 +3,9 @@
 
 {% block content %}
 <h1>Aggiungi allievo!</h1>
-<form method="post">
+<form id="adduser" method="post">
 <div class="main-div">
     <div class="left">
-        
             <div class="form-container">
                 <div class ="form-elements">
                     <label for="nome">Nome</label>
@@ -17,52 +16,53 @@
                 <div class="form-elements">
                     <label for="giorno">Giorno di nascita</label>
                     <select name="giorno" id="giorno">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
-                        <option value="13">13</option>
-                        <option value="14">14</option>
-                        <option value="15">15</option>
-                        <option value="16">16</option>
-                        <option value="17">17</option>
-                        <option value="18">18</option>
-                        <option value="19">19</option>
-                        <option value="20">20</option>
-                        <option value="21">21</option>
-                        <option value="22">22</option>
-                        <option value="23">23</option>
-                        <option value="24">24</option>
-                        <option value="25">25</option>
-                        <option value="26">26</option>
-                        <option value="27">27</option>
-                        <option value="28">28</option>
-                        <option value="29">29</option>
-                        <option value="30">30</option>
-                        <option value="31">31</option>
+                        <option value ="-" disabled ="true">-</option>
+                        <option id="d1" value ="1">1</option>
+                        <option id="d2" value ="2">2</option>
+                        <option id="d3" value ="3">3</option>
+                        <option id="d4" value ="4">4</option>
+                        <option id="d5" value ="5">5</option>
+                        <option id="d6" value ="6">6</option>
+                        <option id="d7" value ="7">7</option>
+                        <option id="d8" value ="8">8</option>
+                        <option id="d9" value ="9">9</option>
+                        <option id="d10" value ="10">10</option>
+                        <option id="d11" value ="11">11</option>
+                        <option id="d12" value ="12">12</option>
+                        <option id="d13" value ="13">13</option>
+                        <option id="d14" value ="14">14</option>
+                        <option id="d15" value ="15">15</option>
+                        <option id="d16" value ="16">16</option>
+                        <option id="d17" value ="17">17</option>
+                        <option id="d18" value ="18">18</option>
+                        <option id="d19" value ="19">19</option>
+                        <option id="d20" value ="20">20</option>
+                        <option id="d21" value ="21">21</option>
+                        <option id="d22" value ="22">22</option>
+                        <option id="d23" value ="23">23</option>
+                        <option id="d24" value ="24">24</option>
+                        <option id="d25" value ="25">25</option>
+                        <option id="d26" value ="26">26</option>
+                        <option id="d27" value ="27">27</option>
+                        <option id="d28" value ="28">28</option>
+                        <option id="d29" value ="29">29</option>
+                        <option id="d30" value ="30">30</option>
+                        <option id="d31" value ="31">31</option>
                     </select>
                     <label for="mese">Mese di nascita</label>
                     <select name="mese" id="mese">
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                        <option value="5">5</option>
-                        <option value="6">6</option>
-                        <option value="7">7</option>
-                        <option value="8">8</option>
-                        <option value="9">9</option>
-                        <option value="10">10</option>
-                        <option value="11">11</option>
-                        <option value="12">12</option>
+                        <option id="m1" value ="1">1</option>
+                        <option id="m2" value ="2">2</option>
+                        <option id="m3" value ="3">3</option>
+                        <option id="m4" value ="4">4</option>
+                        <option id="m5" value ="5">5</option>
+                        <option id="m6" value ="6">6</option>
+                        <option id="m7" value ="7">7</option>
+                        <option id="m8" value ="8">8</option>
+                        <option id="m9" value ="9">9</option>
+                        <option id="m10" value ="10">10</option>
+                        <option id="m11" value ="11">11</option>
+                        <option id="m12" value ="12">12</option>
                     </select>
                     <label for="anno">Anno di nascita</label>
                     <select name="anno" id="anno">
@@ -198,10 +198,27 @@
                 </div>
                 <div class="form-elements">
                     <label>livello dell'atleta</label>
-                    <input type="checkbox" name="agonistico" id="agonistico">
-                    <label for="agonistico">agonistico</label>
-                    <input type="checkbox" name="dilettante" id="dilettante">
-                    <label for="dilettante">dilettante</label>
+                    <select name="livello" id="livello">
+                        <option value ="I love tennis">I love tennis</option>
+                        <option value ="sat under 8">sat under 8</option>
+                        <option value ="sat under 10">sat under 10</option>
+                        <option value ="sat under 12">sat under 12</option>
+                        <option value ="sat under 14">sat under 14</option>
+                        <option value ="sat under 16">sat under 16</option>
+                        <option value ="sat under 18">sat under 18</option>
+                        <option value ="pre ago under 8">pre ago under 8</option>
+                        <option value ="pre ago under 10">pre ago under 10</option>
+                        <option value ="pre ago under 12">pre ago under 12</option>
+                        <option value ="pre ago under 14">pre ago under 14</option>
+                        <option value ="pre ago under 16">pre ago under 16</option>
+                        <option value ="pre ago under 18">pre ago under 18</option>
+                        <option value ="ago under 8">ago under 8</option>
+                        <option value ="ago under 10">ago under 10</option>
+                        <option value ="ago under 12">ago under 12</option>
+                        <option value ="ago under 14">ago under 14</option>
+                        <option value ="ago under 16">ago under 16</option>
+                        <option value ="ago under 18">ago under 18</option>
+                    </select>
                 </div>
                 <div class="form-elements">
                     <label for="allenamenti">numero di allenamenti</label>
@@ -214,33 +231,39 @@
                 </div>
             </div> 
     </div>
+    <div class="right">
+        <div class="calendar-list">
+            <table id="table-calendars">
+                <tr>
+                    <th></th>
+                    <th>Id</th>
+                    <th>Ora inizio</th>
+                    <th>Ora fine</th>
+                    <th>Minuti degli slot</th>
+                    <th>Slot liminati</th>
+                </tr>
+            {% for cal in calendar_list%}
+                <tr id="tr{{loop.index}}" name="tr{{loop.index}}">
+                    <td><input type="checkbox" id="{{loop.index}}" name="{{loop.index}}" class="checkbox-calendar" onclick="uncheck_other_checkboxes(this)"></td>
+                    <td>{{loop.index}}</td>
+                    <td>{{cal.oremattina}}</td>
+                    <td>{{cal.orepomeriggio}}</td>
+                    <td>{{cal.numeroslot}}</td>
+                    <td>{{cal.sloteliminati}}</td>
+                </tr>
+            {% endfor %}
+            </table>
+        </div>
+    </div>
 </div>
-<div class="calendar-list">
-    <table id="table-calendars">
-        <tr>
-            <th></th>
-            <th>Id</th>
-            <th>Ora inizio</th>
-            <th>Ora fine</th>
-            <th>minuti degli slot</th>
-            <th>sloteliminati</th>
-        </tr>
-    {% for cal in calendar_list%}
-        <tr id="tr{{loop.index}}" name="tr{{loop.index}}">
-            <td><input type="checkbox" id="{{loop.index}}" name="{{loop.index}}" class="checkbox-calendar" onclick="uncheck_other_checkboxes(this)"></td>
-            <td>{{loop.index}}</td>
-            <td>{{cal.oremattina}}</td>
-            <td>{{cal.orepomeriggio}}</td>
-            <td>{{cal.numeroslot}}</td>
-            <td>{{cal.sloteliminati}}</td>
-        </tr>
-    {% endfor %}
-    </table>
+<div class="insert-availability" id="insert-availability">
+
 </div>
-<div class="rigth" id="rigth">
+<div class="submit">
+    <input type="text" id="idcalendar" name="idcalendar" readonly>
+    <input type="submit" id="submit">
 </div>
-<input type="text" id="idcalendar" name="idcalendar" readonly>
-<input type="submit" id="submit">
+
 </form>
 <script src="{{ url_for('static', filename='scripts/addUserHandler.js')}}"></script>
 {% endblock %}

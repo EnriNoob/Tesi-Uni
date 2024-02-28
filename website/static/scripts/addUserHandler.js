@@ -1,23 +1,42 @@
-document.getElementById("agonistico").addEventListener("click",untoggle_dilettante)
-document.getElementById("dilettante").addEventListener("click",untoggle_agonistico)
+var day = document.getElementById("giorno")
+var month = document.getElementById("mese")
+var year = document.getElementById("anno")
+const giorni_nei_mesi = [31,28,31,30,31,30,31,31,30,31,30,31]
 
-function untoggle_dilettante(){
-    document.getElementById("agonistico").checked = true 
-    document.getElementById("dilettante").checked = false
-}
+month.addEventListener("input", function(){
+    var mese = month.value
+    console.log(mese);
+    var giorni_nel_mese = giorni_nei_mesi[mese - 1]
 
-function untoggle_agonistico(){
-    document.getElementById("dilettante").checked = true
-    document.getElementById("agonistico").checked = false
-}
+    for (let i = 1; i <= 31; i++) {
+        document.getElementById("d" + i).disabled = false
+        if (i>=giorni_nel_mese + 1) {
+                document.getElementById("d" + i).disabled = true
+        }
+    }
+})
+
+year.addEventListener("input", function(){
+    var anno = year.value
+    let mese = month.value
+    console.log(mese);
+    if (mese == 2) {
+        if (anno % 400 == 0 || (anno %4 == 0 && anno % 100 != 0) ) {
+            document.getElementById("d29").disabled = false
+        }
+        else{
+        document.getElementById("d29").disabled = true
+        }
+    }
+})
 
 function uncheck_other_checkboxes(input){
     var calendarsLength = (document.getElementsByClassName("checkbox-calendar")).length
-    document.getElementById("tr" + input.name).style.backgroundColor = "rgb(2, 134, 2)"
+    document.getElementById("tr" + input.name).style.backgroundColor = "#2323ef"
     for (var i = 1 ;  i <= calendarsLength ; i++){
         if (parseInt(input.name) != i){
             document.getElementById(i).checked = false
-            document.getElementById("tr" + i).style.backgroundColor = "rgb(8, 202, 8)"
+            document.getElementById("tr" + i).style.backgroundColor = "#7171f3"
         }      
     }
     insert_availability(input, "tr" + input.name)
@@ -28,7 +47,7 @@ function insert_availability(input,trname){
     var right_row = rows[trname]
 
     const giorni = ["H","L","M","M","G","V","S"]
-    var div = document.getElementById("rigth")
+    var div = document.getElementById("insert-availability")
     
     var idCalendar = (right_row.cells[1]).innerHTML
     var oraInizio  = (right_row.cells[2]).innerHTML
@@ -54,7 +73,7 @@ function insert_availability(input,trname){
     var data = new Date(2024,1,1,startOre,startMinuti,0,0)
 
 
-    div.innerHTML="";
+    div.innerHTML= " ";
     
     var divisionSlot = (secondi_giorno) / (slot * 60)
     var table = document.createElement("table");
