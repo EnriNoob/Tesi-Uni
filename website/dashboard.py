@@ -123,7 +123,7 @@ def create_user():
         id_calendario = request.form.get("idcalendar")
         d = request.form.getlist("check")
         # controllo se l'utente non abbia inserito nome o cognome
-        if nome == "" or cognome == "":
+        if nome == "" or cognome == "" or giorno_nascita == '-' or mese_nascita == '-' or anno_nascita == '-' or genere == '-' or livello == '-' or numero_allenamenti == '-' or id_calendario == '-':
             flash("non hai inserito nome oppure cognome")
             return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
         

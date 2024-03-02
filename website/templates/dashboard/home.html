@@ -2,6 +2,7 @@
 {% block title %} Home {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/homeStyle.css') }}">
 {% if name %}
     <h1>Benvenuto {{ name }}!</h1>
 {% else %}
@@ -29,10 +30,12 @@
             <i class="fa-solid fa-user-minus" style="font-size:100px"></i>
             <h1 id="menuh1">modifica allievo</h1>
         </div>
-        <div class="menuitems">
-            <i class="fa-solid fa-check" style="font-size:100px"></i>
-            <h1 id="menuh1">conferma calendario</h1>
-        </div>
+        <a href="optimization">
+            <div class="menuitems">
+                <i class="fa-solid fa-check" style="font-size:100px"></i>
+                <h1 id="menuh1">conferma calendario</h1>
+            </div>
+        </a>
     </div>
 </div>
 {% endblock %}

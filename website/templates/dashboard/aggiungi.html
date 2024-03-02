@@ -2,6 +2,7 @@
 {% block title %} Aggiungi utente {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/addUserStyle.css') }}">
 <h1>Aggiungi allievo!</h1>
 <form id="adduser" method="post">
 <div class="main-div">
@@ -16,7 +17,7 @@
                 <div class="form-elements">
                     <label for="giorno">Giorno di nascita</label>
                     <select name="giorno" id="giorno">
-                        <option value ="-" disabled ="true">-</option>
+                        <option disabled selected value>-</option>
                         <option id="d1" value ="1">1</option>
                         <option id="d2" value ="2">2</option>
                         <option id="d3" value ="3">3</option>
@@ -51,6 +52,7 @@
                     </select>
                     <label for="mese">Mese di nascita</label>
                     <select name="mese" id="mese">
+                        <option disabled selected value>-</option>
                         <option id="m1" value ="1">1</option>
                         <option id="m2" value ="2">2</option>
                         <option id="m3" value ="3">3</option>
@@ -66,6 +68,7 @@
                     </select>
                     <label for="anno">Anno di nascita</label>
                     <select name="anno" id="anno">
+                        <option disabled selected value>-</option>
                         <option value="2024">2024</option>
                         <option value="2023">2023</option>
                         <option value="2022">2022</option>
@@ -191,7 +194,7 @@
                 <div class="form-elements">
                     <label for="genere">Genere</label>
                     <select name="genere" id="genere">
-                        <option value="" disabled>Seleziona--</option>
+                        <option disabled selected value>-</option>
                         <option value="m">Maschio</option>
                         <option value="f">Femmina</option>
                     </select>
@@ -199,6 +202,7 @@
                 <div class="form-elements">
                     <label>livello dell'atleta</label>
                     <select name="livello" id="livello">
+                        <option disabled selected value>-</option>
                         <option value ="I love tennis">I love tennis</option>
                         <option value ="sat under 8">sat under 8</option>
                         <option value ="sat under 10">sat under 10</option>
@@ -223,6 +227,7 @@
                 <div class="form-elements">
                     <label for="allenamenti">numero di allenamenti</label>
                     <select name="allenamenti" id="allenamenti">
+                        <option disabled selected value>-</option>
                         <option value="1">1</option>
                         <option value="2">2</option>
                         <option value="3">3</option>

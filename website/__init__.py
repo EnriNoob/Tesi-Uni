@@ -17,11 +17,12 @@ def create_app():
 
     from .dashboard import dashboard
     from .access import access
+    from .optimization import optimization
     # registriamo i blueprint
     app.register_blueprint(access, url_prefix='/')
     app.register_blueprint(dashboard, url_prefix='/home')
+    app.register_blueprint(optimization, url_prefix='/home/optimization')
    
-
     from .models import User
 
     with app.app_context():

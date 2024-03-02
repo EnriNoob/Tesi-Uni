@@ -14,6 +14,9 @@ month.addEventListener("input", function(){
                 document.getElementById("d" + i).disabled = true
         }
     }
+    if (mese == 2)
+        if(parseInt(year.value) % 400 == 0 || (parseInt(year.value) % 4 == 0 && parseInt(year.value) % 100 != 0))
+            document.getElementById("d29").disabled = false 
 })
 
 year.addEventListener("input", function(){
