@@ -1,34 +1,47 @@
 .form-main{
-    background-color: red;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 0.25rem;
     margin-top: 20px;
+    margin-left: 20%;
+    margin-right: 20%;
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     padding: 10px;
+    justify-content: space-around;
 }
-.form-main form{
-    width: 20%;
+
+ form{
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    /* justify-content: space-around; */
+    align-items: center;
 }
+
 .form-elements{
     margin: 10px 10px 10px 10px;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: center;
 }
 .form-elements #tiposlot{
-    width: 27%;
+    width: 20%;
 }
-.form-input{
-    display: flex;
-    justify-content: center;
+.form-elements input{
+    margin-top: 10px;
 }
-.generateCalendar {
+.calendar {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    background-color: white;
+    border: 1px solid black;
+    margin-top: 10px;
+    border-radius: 0.25rem;
     
 }
+
 input[type="time"]::-webkit-calendar-picker-indicator {
     display: none;
 }
@@ -40,9 +53,13 @@ input[type="time"]::-webkit-clear-button {
 
 input[type="checkbox"]:checked:after {
     /* Heres your symbol replacement */
-    content: "X";
+    content: "";
     color: #fff;
 }
 #tdata{
     text-align: center;
+}
+
+table {
+    padding: 10px
 }

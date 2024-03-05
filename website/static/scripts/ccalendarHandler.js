@@ -95,7 +95,7 @@ function generateCalendar(){
                         input.setAttribute("value", (i - 1) +"-" + (j -1))
                         tdata.appendChild(input)
                         tdata.style.border = '1px solid black'
-                        tdata.style.margin= "10px 0px 10px 0px"
+                        tdata.style.margin= "10px 10px 10px 10px"
                     }     
                 }
             }

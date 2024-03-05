@@ -1,10 +1,11 @@
+from time import mktime
 from flask import Blueprint, render_template, request
 from flask_login import login_required, current_user
 from sqlalchemy import null
 from . import db
 from .models import Allievo, User
 from .models import Calendario
-from datetime import datetime
+from datetime import date, datetime
 
 
 from calendar import Calendar
@@ -15,6 +16,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from . import db
 from flask_login import login_user, login_required, logout_user, current_user
 import datetime
+
 
 dashboard = Blueprint('dashboard',__name__,template_folder="templates/dashboard")
 admin_name = ""
@@ -122,12 +124,79 @@ def create_user():
         numero_allenamenti = request.form.get("allenamenti")
         id_calendario = request.form.get("idcalendar")
         d = request.form.getlist("check")
+
+        print(nome,cognome,giorno_nascita,mese_nascita, anno_nascita, genere, livello, numero_allenamenti, id_calendario, d)
+
         # controllo se l'utente non abbia inserito nome o cognome
         if nome == "" or cognome == "" or giorno_nascita == '-' or mese_nascita == '-' or anno_nascita == '-' or genere == '-' or livello == '-' or numero_allenamenti == '-' or id_calendario == '-':
             flash("non hai inserito nome oppure cognome")
             return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
-        
-        print(nome,cognome,giorno_nascita,mese_nascita, anno_nascita, genere, livello, numero_allenamenti, id_calendario, d)
+        # data di oggi
+        struct_time_oggi = date.today().timetuple()
+
+        # data di nascita dell'allievo
+        struct_time_nascita = date(int(anno_nascita), int(mese_nascita), int(giorno_nascita)).timetuple()
+        # da 2024 in giu 
+        match livello:
+            #bambini di 3 e 4 anni 2020 <= nascita <= 2021
+            case "I love tennis": 
+                low_bound = date(struct_time_oggi.tm_year - 4, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 3, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                
+            # bambini dai 5 ai 8 anni, 2016 <= nascita <= 2019    
+            case "sat under 8" | "pre ago under 8" | "ago under 8":
+                low_bound = date(struct_time_oggi.tm_year - 8, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 5, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                
+            # bambini dai 9 ai 10 anni, 2014 <= nascita <= 2015
+            case "sat under 10" | "pre ago under 10" | "ago under 10":
+                # 2014 < 2015
+                low_bound = date(struct_time_oggi.tm_year - 10, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 9, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()  
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                
+            # bambini dai 11 ai 12 anni, 2012 <= nascita <= 2013
+            case "sat under 12" | "pre ago under 12" | "ago under 12":
+                low_bound = date(struct_time_oggi.tm_year - 12, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 11, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple() 
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+                
+            # bambini dai 13 ai 14 anni, 2010 <= nascita <= 2011
+            case "sat under 14" | "pre ago under 14" | "ago under 14":
+                low_bound = date(struct_time_oggi.tm_year - 14, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 13, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()  
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+            
+            # bambini dai 15 ai 16 anni, 2008 <= nascita <= 2009
+            case "sat under 16" | "pre ago under 16" | "ago under 16":
+                low_bound = date(struct_time_oggi.tm_year - 16, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 15, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+            
+            # bambini dai 17 ai 18 anni, 2008 <= nascita <= 2009
+            case "sat under 18" | "pre ago under 18" | "ago under 18":
+                low_bound = date(struct_time_oggi.tm_year - 16, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                high_bound = date(struct_time_oggi.tm_year - 15, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
+                if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+            case _ : 
+                print("non hai messo nessuna categoria")
+                
         slotDisponibili = ""
         buckets_days = [[] for x in range (6)]
         # inserisco nei bucket gli slot in cui gli studenti sono disponibili a fare allenamento
@@ -136,13 +205,27 @@ def create_user():
             split = check.rsplit('-')
             buckets_days[int(split[0])].append(split[1])
         print(buckets_days)
+        
+        ms = 0
+
+        if livello == "I love tennis" or livello == "sat under 8" or livello == "sat under 10" or livello == "sat under 12" or livello == "sat under 14" or livello == "sat under 16" or livello == "sat under 18" :
+            ms = 2
+        else:
+            ms = 3
+        
+        for d,day in enumerate(buckets_days):
+            if len(day) % ms != 0:
+                flash(f"non hai inserito un numero di slot mutipli di {ms}")
+                return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+        # se siamo qua è perchè non c'è nessun giorno con numeri di slot che non sono multipli o di 2 o di 3
         # controllo che gli studenti abbiano messo disponibilità giuste (no slot da mezz'ora da solo, minimo due (e multipli di 2) per i I love tennis e sat, minimo 3 per gli ago e pre ago)
         for d,day in enumerate(buckets_days):
-            # controlliamo se l'utente in un giorno abbia eliminato uno solo slot
+            # controlliamo se l'utente in un giorno abbia  messo uno solo slot
             if len(day) == 1:
                 flash(f'attenzione, hai dato disponibilità nel giorno{day} un solo slot!')
                 return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
-            # se no dobbiamo controllare che abbia imesso uno solo slot da solo in un giorno in cui ha messo più slot disponibili
+            # se no dobbiamo controllare che abbia imesso uno solo slot da solo in un giorno in cui ha messo più slot disponibili 
+            # es [x1,0,0,x2,x3]
             else:
                 # scorriamo nei slot disponibli nei vari giorni
                 for x,slot in enumerate(day) :

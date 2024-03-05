@@ -2,16 +2,31 @@
     display: flex;
     flex-direction: column;
     align-items: center; /* Centra verticalmente */
-    margin-left: 20%;
-    margin-right: 20%;
-    background-color: red;
+    margin-left: 35%;
+    margin-right: 35%;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    padding:1%;
+    
 }
 
 .form-group .btn{
     margin-top: 30px;
     margin-bottom: 10px;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    background-color: white;
+}
+
+.form-group .btn:hover{
+    
+    border: 1px solid black;
+    background-color: red;
+    color: white;
 }
 
 .form-group input{
     width: 40%;
+    margin-top: 10px;
+    margin-bottom: 10px;
 }

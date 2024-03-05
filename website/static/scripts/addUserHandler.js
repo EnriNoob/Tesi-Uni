@@ -35,11 +35,11 @@ year.addEventListener("input", function(){
 
 function uncheck_other_checkboxes(input){
     var calendarsLength = (document.getElementsByClassName("checkbox-calendar")).length
-    document.getElementById("tr" + input.name).style.backgroundColor = "#2323ef"
+    document.getElementById("tr" + input.name).style.backgroundColor = "red"
     for (var i = 1 ;  i <= calendarsLength ; i++){
         if (parseInt(input.name) != i){
             document.getElementById(i).checked = false
-            document.getElementById("tr" + i).style.backgroundColor = "#7171f3"
+            document.getElementById("tr" + i).style.backgroundColor = "white"
         }      
     }
     insert_availability(input, "tr" + input.name)
@@ -144,7 +144,6 @@ function insert_availability(input,trname){
     for (let i = 0; i < slotEliminatiArray.length; i++) {
         document.getElementById(slotEliminatiArray[i]).disabled = true
     }
-
     //console.log(idCalendar.innerHTML)
     //console.log(oraInizio.innerHTML);
     //console.log(oraFine.innerHTML);
