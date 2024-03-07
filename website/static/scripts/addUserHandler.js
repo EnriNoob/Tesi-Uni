@@ -1,6 +1,8 @@
 var day = document.getElementById("giorno")
 var month = document.getElementById("mese")
 var year = document.getElementById("anno")
+var livello = document.getElementById("livello")
+
 const giorni_nei_mesi = [31,28,31,30,31,30,31,31,30,31,30,31]
 
 month.addEventListener("input", function(){
@@ -32,20 +34,50 @@ year.addEventListener("input", function(){
         }
     }
 })
-
-function uncheck_other_checkboxes(input){
-    var calendarsLength = (document.getElementsByClassName("checkbox-calendar")).length
-    document.getElementById("tr" + input.name).style.backgroundColor = "red"
-    for (var i = 1 ;  i <= calendarsLength ; i++){
-        if (parseInt(input.name) != i){
-            document.getElementById(i).checked = false
-            document.getElementById("tr" + i).style.backgroundColor = "white"
-        }      
+livello.addEventListener("input", function(){
+    liv = document.getElementById("livello").value
+    var slot = 0
+    console.log(liv);
+    if (liv == "I love tennis" || liv == "sat under 8" || liv == "sat under 10" || liv == "sat under 12" || liv == "sat under 14" || liv == "sat under 16" || liv == "sat under 18"){
+        slot = 60
     }
-    insert_availability(input, "tr" + input.name)
-}
+    else{
+        slot = 90
+    }
 
-function insert_availability(input,trname){
+    document.getElementById("calendar-list").style.display = "flex"
+
+    var calendars = document.getElementsByClassName("checkbox-calendar")
+    var checkSlots = document.getElementsByClassName("check-slot")
+    var input
+
+    for (let i = 0; i < 2; i++) {
+        document.getElementById("tr" + (checkSlots[i].getAttribute("name")).slice(-1)).style.backgroundColor = "white"
+        document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).disabled = false
+        document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).checked = false 
+   
+    }
+   
+    for (let i = 0; i < 2; i++) {
+        
+        if (checkSlots[i].innerText != slot){
+            document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).disabled = true
+        }
+        else{
+            document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).disabled = false
+            document.getElementById("tr" + (checkSlots[i].getAttribute("name")).slice(-1)).style.backgroundColor = "red"
+            document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).checked = true
+            input = document.getElementById("tr"  + (checkSlots[i].getAttribute("name")).slice(-1))
+        }  
+    }
+    
+    insert_availability(input.getAttribute("name"))
+
+})
+
+
+function insert_availability(trname){
+    document.getElementById("submit").style.display = "flex"
     rows = document.getElementById("table-calendars").rows;
     var right_row = rows[trname]
 
@@ -58,7 +90,6 @@ function insert_availability(input,trname){
     var slot = (right_row.cells[4]).innerHTML
     var slotE = (right_row.cells[5]).innerHTML
     var slotEliminatiArray = slotE.split(",")
-    slotEliminatiArray.splice((slotEliminatiArray.length) - 1,1)
     console.log(slotEliminatiArray);
 
     var splitInizioOra = oraInizio.split(":")
@@ -73,12 +104,15 @@ function insert_availability(input,trname){
 
     var secondi_giorno = (endOre * 3600 + endMinuti *60) - (startOre * 3600 + startMinuti * 60)
 
-    var data = new Date(2024,1,1,startOre,startMinuti,0,0)
+    var oggi = new Date(2024,1,1,startOre,startMinuti,0,0)
 
 
     div.innerHTML= " ";
     
     var divisionSlot = (secondi_giorno) / (slot * 60)
+
+    tempoDaAggiungere = (slot * 60) * 1000
+    var stringa = ""
     var table = document.createElement("table");
     
     for (let  i= 0;  i < divisionSlot + 1; i++){
@@ -94,26 +128,16 @@ function insert_availability(input,trname){
             else {
                 // nella prima colonna metto gli orari slottati bene
                 if (j == 0){
-                    // per evitare di aggiunger 0 al 30 
-                    if(data.getMinutes() == 30){
-                        stringa = + data.getHours() + ":" + data.getMinutes()
-                    }
-                    // per aggiungere 0 ad esempio (9:0)
-                    else{
-                        stringa = + data.getHours() + ":" + data.getMinutes() + "0"
-                    }
-                    // se passiamo all'ora successiva (9:30 + 0:30)
-                    if (data.getMinutes() + slot == 60){
-                        data.setHours(data.getHours() + 1)
-                        data.setMinutes(0)
-                        stringa += " - " + data.getHours() + ":" + data.getMinutes() + "0"
-                    }
-                    // aggiungiamo i successivi 30 minuti di uno slot che parte alle x:00 (9:00 - 9:30)
-                    else{
-                        data.setMinutes(data.getMinutes() + 30)
-                        stringa += " - " + data.getHours() + ":" + data.getMinutes()
-                    }
+                   
+                    stringa = oggi.toLocaleTimeString().slice(0,5);
+                    console.log(stringa);
+                    console.log(oggi.getMinutes());
+                    //console.log(stringa);
+                    oggi.setTime(oggi.getTime() + tempoDaAggiungere)
                     
+                    stringa += " - " + oggi.toLocaleTimeString().slice(0,5);
+                    console.log(stringa);
+
                     const t_data_hour = trow.insertCell()
                     label = document.createElement("label")
                     label.innerHTML = "" + stringa

@@ -29,9 +29,8 @@ function generateCalendar(){
     console.log("secondi durate il giorno ", secondi_giorno);
     console.log("ore durante la giornata", secondi_giorno / 3600);
     
-    var data = new Date(2024,1,1,startOre,startMinuti,0,0)
-    console.log(data);
-    console.log(data.getHours() + ":" + data.getMinutes());
+    var oggi = new Date(2024,1,1,startOre,startMinuti,0,0)
+    tempoDaAggiungere = (slot * 60) * 1000
 
     //controlliamo se gli orari messi dell'utente riescono ad essere divisibili senza resto dai minuti dagli slot inseriti
     if ((secondi_giorno % (slot * 60)) != 0) {
@@ -58,26 +57,15 @@ function generateCalendar(){
                 else {
                     // nella prima colonna metto gli orari slottati bene
                     if (j == 0){
-                        // per evitare di aggiunger 0 al 30 
-                        if(data.getMinutes() == 30){
-                            stringa = + data.getHours() + ":" + data.getMinutes()
-                        }
-                        // per aggiungere 0 ad esempio (9:0)
-                        else{
-                            stringa = + data.getHours() + ":" + data.getMinutes() + "0"
-                        }
-                        // se passiamo all'ora successiva (9:30 + 0:30)
-                        if (data.getMinutes() + slot == 60){
-                            data.setHours(data.getHours() + 1)
-                            data.setMinutes(0)
-                            stringa += " - " + data.getHours() + ":" + data.getMinutes() + "0"
-                        }
-                        // aggiungiamo i successivi 30 minuti di uno slot che parte alle x:00 (9:00 - 9:30)
-                        else{
-                            data.setMinutes(data.getMinutes() + 30)
-                            stringa += " - " + data.getHours() + ":" + data.getMinutes()
-                        }
+                        stringa = oggi.toLocaleTimeString().slice(0,5);
+                        console.log(stringa);
+                        console.log(oggi.getMinutes());
+                        //console.log(stringa);
+                        oggi.setTime(oggi.getTime() + tempoDaAggiungere)
                         
+                        stringa += " - " + oggi.toLocaleTimeString().slice(0,5);
+                        console.log(stringa);
+
                         const t_data_hour = trow.insertCell()
                         label = document.createElement("label")
                         label.innerHTML = "" + stringa

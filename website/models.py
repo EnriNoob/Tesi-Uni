@@ -22,6 +22,7 @@ class Allievo(db.Model):
     giornonascita = db.Column(db.Integer)
     mesenascita = db.Column(db.Integer)
     annonascita = db.Column(db.Integer)
+    genere = db.Column(db.String(150))
     livello = db.Column(db.String(150))
     numeroallenamenti = db.Column(db.Integer)
     slotdisponibilita = db.Column(db.String(150))

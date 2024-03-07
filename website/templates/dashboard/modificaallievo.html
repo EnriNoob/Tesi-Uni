@@ -1,0 +1,149 @@
+{% extends "base.html"%}
+{% block title %} Aggiungi utente {% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/modifyStudent.css') }}">
+<h1>Modifica studente !</h1>
+{% if not student_list%}
+<h1>non c'è nessun allievo ancora</h1>
+<div class="add-student">
+    <a href="aggiungi">
+        <button>Aggiungi un allievo!</button>
+    </a>
+</div>
+{% else %}
+<div class="student-list" id="student-list">
+    <table id="table-students">
+        <tr>
+            <th>seleziona</th>
+            <th>Id</th>
+            <th>nome</th>
+            <th>cognome</th>
+            <th>giorno di nascita</th>
+            <th>mese di nascita</th>
+            <th>anno di nascita</th>
+            <th>genere</th>
+            <th>livello</th>
+            <th>numero di allenamenti</th>
+            <th>disponibilità</th>
+            <th>id cal</th>
+        </tr>
+    {% for student in student_list%}
+        <tr id="tr{{student.id}}" name="tr{{student.id}}" class="trcal">
+            <td><input type="checkbox" id="{{student.id}}" class="checkbox-calendar" onclick="generate_popup(this)"></td>
+            <td>{{student.id}}</td>
+            <td>{{student.nome}}</td>
+            <td>{{student.cognome}}</td>
+            <td>{{student.giornonascita}}</td>
+            <td>{{student.mesenascita}}</td>
+            <td>{{student.annonascita}}</td>
+            <td>{{student.genere}}</td>
+            <td>{{student.livello}}</td>
+            <td>{{student.numeroallenamenti}}</td>
+            <td>{{student.slotdisponibilita}}</td>
+            <td>{{student.id_calendario}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<div class="popup" id="popup-content" style="visibility: hidden;">
+    <div class="popup-content" >
+        <div class="close">
+            <i class="fa-solid fa-x" onclick="close_popup()"></i>
+        </div>
+        <form id="adduser" method="post">
+            <div class="main-div">
+                <div class="form-container">
+                    <div class ="form-elements">
+                        
+                        <label for="idallievo"></label>
+                        <input type="text" name="idallievo" id="idallievo" readonly style="display: none;">
+                        
+                        <label for="nome">Nome</label>
+                        <input type="text" name="nome" id="nome" placeholder="inserisci nome">
+
+                        <label for="cgnome">Cognome</label>
+                        <input type="text" name="cognome" id="cognome" placeholder="inserisci cognome">
+                    </div>
+                    <div class="form-elements">
+                        
+                        <label for="mese">Giorno di nascita</label>
+                        <input type="text" name="giorno" id="giorno" readonly>
+
+                        <label for="mese">Mese di nascita</label>
+                        <input type="text" name="mese" id="mese" readonly>
+
+                        <label for="anno">Anno di nascita</label>
+                        <input type="text" name="anno" id="anno" readonly>
+                    </div>
+                    <div class="form-elements">
+                        <label for="genere">Genere</label>
+                        <input type="text" name="genere" id="genere" readonly>
+                        
+                        <label for="allenamenti">numero di allenamenti</label>
+                        <input type="text" name="allenamenti" id="allenamenti">
+                        
+                        <label>livello dell'atleta</label>
+                        <select name="livello" id="livello">
+                            <option disabled selected value="-">-</option>
+                            <option value ="I love tennis">I love tennis</option>
+                            <option value ="sat under 8">sat under 8</option>
+                            <option value ="sat under 10">sat under 10</option>
+                            <option value ="sat under 12">sat under 12</option>
+                            <option value ="sat under 14">sat under 14</option>
+                            <option value ="sat under 16">sat under 16</option>
+                            <option value ="sat under 18">sat under 18</option>
+                            <option value ="pre ago under 8">pre ago under 8</option>
+                            <option value ="pre ago under 10">pre ago under 10</option>
+                            <option value ="pre ago under 12">pre ago under 12</option>
+                            <option value ="pre ago under 14">pre ago under 14</option>
+                            <option value ="pre ago under 16">pre ago under 16</option>
+                            <option value ="pre ago under 18">pre ago under 18</option>
+                            <option value ="ago under 8">ago under 8</option>
+                            <option value ="ago under 10">ago under 10</option>
+                            <option value ="ago under 12">ago under 12</option>
+                            <option value ="ago under 14">ago under 14</option>
+                            <option value ="ago under 16">ago under 16</option>
+                            <option value ="ago under 18">ago under 18</option>
+                        </select>
+                    </div>
+                    <div class ="form-elements">
+                        <label for="slotdisponibilita">slot disponibilità</label>
+                        <input type="text" name="slotdisponibilita" id="slotdisponibilita" readonly>
+                    </div>
+                </div> 
+               
+            </div>
+            <div class="calendar-list" id = "calendar-list">
+                <table id="table-calendars" >
+                    <tr>
+                        <th></th>
+                        <th>Id</th>
+                        <th>Ora inizio</th>
+                        <th>Ora fine</th>
+                        <th>Minuti degli slot</th>
+                        <th>Slot eliminati</th>
+                    </tr>
+                {% for cal in calendar_list%}
+                    <tr id="tr{{cal.id}}" name="tr{{cal.id}}">
+                        <td><input type="checkbox" id="{{cal.id}}" class="checkbox-calendar"></td>
+                        <td>{{cal.id}}</td>
+                        <td>{{cal.oremattina}}</td>
+                        <td>{{cal.orepomeriggio}}</td>
+                        <td class = "check-slot" id="cs{{cal.id}}" name="cs{{cal.id}}">{{cal.numeroslot}}</td>
+                        <td>{{cal.sloteliminati}}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+                <div class="calendar" id="calendar"></div>
+            </div>
+            
+            
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='scripts/modifyStudent.js')}}"></script>
+{% endblock %}

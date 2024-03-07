@@ -1,0 +1,93 @@
+#adduser{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center
+}
+
+.main-div{
+    display: flex;
+    flex-direction: column;
+    margin-top: 10px;
+    justify-content: center;
+    align-items: center;
+}
+.form-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    width: fit-content;
+    border-radius: 20px;
+    margin: 10px;
+    padding : 10px
+    
+}
+.form-elements{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.form-elements input,select{
+    margin: 0px 10px 0px 10px;
+}
+
+.calendar-list{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    margin: 10px;
+    padding: 10px;
+}
+.calendar-list #table-calendars{
+    font-family: arial, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+    margin: 10px;
+}
+.calendar-list #table-calendars th{
+    text-align: left;
+    margin-left: 1px;
+    border: 1px solid black;
+    padding:5px
+}
+
+.calendar-list #table-calendars td{
+    text-align: left;
+    border: 1px solid black;
+    padding:5px
+}
+
+.calendar-list #table-calendars td:last-child{
+    border-bottom-right-radius: 0.25rem;
+}
+
+form{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+}
+
+input[type="time"]::-webkit-calendar-picker-indicator {
+    display: none;
+}
+
+input[type="time"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-clear-button {
+    display: none;
+}
+
+input[type="checkbox"]:checked:after {
+    /* Heres your symbol replacement */
+    content: "";
+    color: #fff;
+}
+
+
+
+

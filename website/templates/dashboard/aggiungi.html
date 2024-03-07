@@ -199,10 +199,19 @@
                         <option value="m">Maschio</option>
                         <option value="f">Femmina</option>
                     </select>
-            
+                    
+                    <label for="allenamenti">numero di allenamenti</label>
+                    <select name="allenamenti" id="allenamenti">
+                        <option disabled selected value>-</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                    </select>
+                    
                     <label>livello dell'atleta</label>
                     <select name="livello" id="livello">
-                        <option disabled selected value>-</option>
+                        <option disabled selected value="-">-</option>
                         <option value ="I love tennis">I love tennis</option>
                         <option value ="sat under 8">sat under 8</option>
                         <option value ="sat under 10">sat under 10</option>
@@ -223,21 +232,12 @@
                         <option value ="ago under 16">ago under 16</option>
                         <option value ="ago under 18">ago under 18</option>
                     </select>
-        
-                    <label for="allenamenti">numero di allenamenti</label>
-                    <select name="allenamenti" id="allenamenti">
-                        <option disabled selected value>-</option>
-                        <option value="1">1</option>
-                        <option value="2">2</option>
-                        <option value="3">3</option>
-                        <option value="4">4</option>
-                    </select>
                 </div>
             </div> 
     </div>
     <div class="right">
-        <div class="calendar-list">
-            <table id="table-calendars">
+        <div class="calendar-list" id = "calendar-list" style="display: none;">
+            <table id="table-calendars" >
                 <tr>
                     <th></th>
                     <th>Id</th>
@@ -247,12 +247,12 @@
                     <th>Slot liminati</th>
                 </tr>
             {% for cal in calendar_list%}
-                <tr id="tr{{loop.index}}" name="tr{{loop.index}}">
-                    <td><input type="checkbox" id="{{loop.index}}" name="{{loop.index}}" class="checkbox-calendar" onclick="uncheck_other_checkboxes(this)"></td>
-                    <td>{{loop.index}}</td>
+                <tr id="tr{{cal.id}}" name="tr{{cal.id}}">
+                    <td><input type="checkbox" id="{{cal.id}}" class="checkbox-calendar"></td>
+                    <td>{{cal.id}}</td>
                     <td>{{cal.oremattina}}</td>
                     <td>{{cal.orepomeriggio}}</td>
-                    <td>{{cal.numeroslot}}</td>
+                    <td class = "check-slot" id="cs{{cal.id}}" name="cs{{cal.id}}">{{cal.numeroslot}}</td>
                     <td>{{cal.sloteliminati}}</td>
                 </tr>
             {% endfor %}
@@ -260,12 +260,15 @@
         </div>
     </div>
 </div>
-<div class="insert-availability" id="insert-availability">
+<div >
 
+
+<div class="insert-availability" id="insert-availability">
 </div>
-<div class="submit">
+<div class="submit" id="submit" style="display: none;">
     <input type="text" id="idcalendar" name="idcalendar" readonly>
     <input type="submit" id="submit">
+</div>
 </div>
 
 </form>
