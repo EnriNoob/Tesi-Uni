@@ -11,37 +11,48 @@
   <body>
     <nav class="navbared">
           <ul>
+            <li>
+              {% with messages = get_flashed_messages(with_categories = true)%}
+              {% if messages%}
+                {% for category, message in messages %}
+                {% if category == 'error' %}
+                <div class = "alert-danger" id="alert-danger" role = "alert"> 
+                  {{message}}
+                  <button type = "button" class = "close" data-dismis = "alert" onclick="closeNotificationDanger()">
+                    <span aria-hidden = "true"> &times;</span>
+                  </button>
+                </div>
+                {% else %}
+                <div class = "alert-success" id="alert-success" role = "alert"> 
+                  {{message}}
+                  <button type = "button" class = "close" data-dismis = "alert" onclick="closeNotificationSuccess()">
+                    <span aria-hidden = "true"> &times;</span>
+                  </button>
+                </div>
+                {% endif %}
+                {% endfor %}
+              {% endif%}
+              {% endwith %}
+            </li>
             {% if user.is_authenticated %}
-            <li><a class="nav-item nav-link" id="home" href="/home">Home</a></li>
             <li><a class="nav-item nav-link" id="logout" href="/logout">Logout</a></li>
+            <li><a class="nav-item nav-link" id="home" href="/home">Home</a></li>
             {% else %}
             <li><a class="nav-item nav-link" id="login" href="/">Login</a></li>
             <li><a class="nav-item nav-link" id="signUp" href="/sign-up">Sign Up</a></li>
             {% endif %}
         </ul>    
     </nav>
-    {% with messages = get_flashed_messages(with_categories = true)%}
-    {% if messages%}
-      {% for category, message in messages %}
-      {% if category == 'error' %}
-      <div class = "alert alert-danger alter-dismissable fade show" role = "alert"> 
-        {{message}}
-        <button type = "button" class = "close" data-dismis = "alert">
-          <span aria-hidden = "true"> &times;</span>
-        </button>
-      </div>
-      {% else %}
-      <div class = "alert alert-success alter-dismissable fade show" role = "alert"> 
-        {{message}}
-        <button type = "button" class = "close" data-dismis = "alert">
-          <span aria-hidden = "true"> &times;</span>
-        </button>
-      </div>
-      {% endif %}
-      {% endfor %}
-    {% endif%}
-    {% endwith %}
+    <script>
+      function closeNotificationSuccess(){
+        document.getElementById("alert-success").style.display = "none";
+      }
+      function closeNotificationDanger(){
+        document.getElementById("alert-danger").style.display = "none"
+        
+        
+      }
+    </script>
     <div class="container">{% block content %} {% endblock %}</div>
-
   </body>
 </html>

@@ -2,12 +2,31 @@
 {% block title %} opti {% endblock %}
 
 {% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/modifyCalendar.css') }}">
+<h1>Modifica calendario !</h1>
 <h1>seleziona calendario</h1>
-<form method="post">
-    <select name="cal" id="cal">
-        <option value="1">1</option>
-        <option value="2">2</option>
-    </select>
-    <input type="submit">
-</form>
+<div class="calendar-list" id = "calendar-list">
+    <table id="table-calendars">
+        <tr>
+            <th>seleziona</th>
+            <th>Id</th>
+            <th>Ora inizio</th>
+            <th>Ora fine</th>
+            <th>Minuti degli slot</th>
+            <th>Slot non disponibili</th>
+        </tr>
+    {% for cal in calendar_list%}
+        <tr id="tr{{cal.id}}" name="tr{{cal.id}}" class="trcal">
+            <form method="post">
+                <td><input type="submit" name="idcal" id="{{cal.id}}" class="checkbox-calendar" value="{{cal.id}}"></td>
+            </form>
+            <td>{{cal.id}}</td>
+            <td>{{cal.oremattina}}</td>
+            <td>{{cal.orepomeriggio}}</td>
+            <td>{{cal.numeroslot}}</td>
+            <td>{{cal.sloteliminati}}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
 {% endblock %}

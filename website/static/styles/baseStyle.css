@@ -11,12 +11,43 @@ body {
     background-color: black;
     border: 1px solid black;
     border-radius: 0.25rem;
+    
 
 }
-.navbared li {
-    float: left;
-    border-right: 1px solid #fffdfd;
-} 
+.navbared li:first-child{
+    float: left;  
+}
+.alert-success{
+    background-color: rgb(18, 183, 18);
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+.alert-success button{
+    margin-left: 20px;
+}
+
+.alert-danger{
+    background-color: red;
+    border-radius: 0.25rem;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+
+}
+.alert-danger button{
+    margin-left: 20px;
+}
+
+.navbared li:nth-child(n+2){
+    float: right;
+    border-left: 1px solid #fffdfd;
+    height: max-content;
+}
+
+
 .navbared li a {
     display: block;
     color: white;
@@ -34,3 +65,5 @@ body {
 .container h1{
     text-align: center;
 }
+
+

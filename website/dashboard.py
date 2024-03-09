@@ -48,7 +48,7 @@ def create_calendar():
         typeslot = request.form.get('tiposlot')
         # controllo che l'utente abbia inserito i campi
         if starthour == "-" or endhour == "-" or typeslot == "-":
-            flash('attenzione, non hai inserito uno di questi dati!')
+            flash('attenzione, non hai inserito uno di questi dati!', category='success')
             return render_template("ccalendar.html", user=current_user)
         
         orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:]),0)
@@ -104,13 +104,13 @@ def create_calendar():
         new_calendar = Calendario(oremattina = str(orainizio) , orepomeriggio= str(orafine) ,numeroslot=int(typeslot), sloteliminati = sloteliminati[:-1])
         db.session.add(new_calendar)
         db.session.commit()
-        flash("creazione del calendario andato a buon fine!")
+        flash("creazione del calendario andato a buon fine!",category='success')
         return redirect(url_for('dashboard.home',name = admin_name)) 
     else:
         # ritorna la pagina in caso in cui l'accediamo dalla dashboard
         calendar_list = Calendario.query.all()
         if len(calendar_list) == 2:
-            flash("ci sono già i due calendari con slot da 60 e 90 minuti")
+            flash("ci sono già i due calendari con slot da 60 e 90 minuti", category='error')
             return redirect(url_for('dashboard.home',name = admin_name)) 
         else:
             return render_template("ccalendar.html", user=current_user)
@@ -128,7 +128,7 @@ def modify_calendar():
         idcal = request.form.get("textid")
         # controllo che l'utente abbia inserito i campi
         if starthour == "-" or endhour == "-" or typeslot == "-":
-            flash('attenzione, non hai inserito uno di questi dati!')
+            flash('attenzione, non hai inserito uno di questi dati!', category='error')
             return render_template("ccalendar.html", user=current_user)
         
         orainizio = datetime.time(int(starthour[0:2]),int(starthour[3:5]),0)
@@ -187,7 +187,7 @@ def create_user():
 
         # controllo se l'utente non abbia inserito nome o cognome
         if nome == "" or cognome == "" or giorno_nascita == '-' or mese_nascita == '-' or anno_nascita == '-' or genere == '-' or livello == '-' or numero_allenamenti == '-' or id_calendario == '-':
-            flash("non hai inserito nome oppure cognome")
+            flash("non hai inserito nome oppure cognome", category='error')
             return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
         # data di oggi
         struct_time_oggi = date.today().timetuple()
@@ -201,7 +201,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 4, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 3, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
                 
             # bambini dai 5 ai 8 anni, 2016 <= nascita <= 2019    
@@ -209,7 +209,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 8, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 5, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
                 
             # bambini dai 9 ai 10 anni, 2014 <= nascita <= 2015
@@ -218,7 +218,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 10, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 9, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()  
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
                 
             # bambini dai 11 ai 12 anni, 2012 <= nascita <= 2013
@@ -226,7 +226,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 12, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 11, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple() 
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
                 
             # bambini dai 13 ai 14 anni, 2010 <= nascita <= 2011
@@ -234,7 +234,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 14, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 13, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()  
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
             
             # bambini dai 15 ai 16 anni, 2008 <= nascita <= 2009
@@ -242,7 +242,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 16, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 15, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
             
             # bambini dai 17 ai 18 anni, 2008 <= nascita <= 2009
@@ -250,7 +250,7 @@ def create_user():
                 low_bound = date(struct_time_oggi.tm_year - 16, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 high_bound = date(struct_time_oggi.tm_year - 15, struct_time_oggi.tm_mon, struct_time_oggi.tm_mday).timetuple()
                 if not (mktime(low_bound) <= mktime(struct_time_nascita) and mktime(struct_time_nascita) <=  mktime(high_bound)):
-                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo{livello}")
+                    flash(f"hai inserito un'anno di nascita sbagliato {anno_nascita}, per il livelllo {livello}", category='error')
                     return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
             case _ : 
                 print("non hai messo nessuna categoria")
@@ -271,7 +271,7 @@ def create_user():
                 count += 1
     
         if count < int(numero_allenamenti):
-                flash("il numero di slot inseriti non soddisfa il numero di allenamenti a settimana dell'allievo")
+                flash(f"il numero di slot inseriti: {count} non soddisfa il numero di allenamenti a settimana dell'allievo {numero_allenamenti}" , category='error')
                 return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
         
         print("è andato tutto bene")
@@ -284,7 +284,7 @@ def create_user():
         new_allievo = Allievo(nome=nome, cognome=cognome, giornonascita=int(giorno_nascita), mesenascita=int(mese_nascita), annonascita=int(anno_nascita),genere = genere,livello = livello, numeroallenamenti=numero_allenamenti, slotdisponibilita=slotDisponibili[:-1], id_calendario= int(id_calendario))
         db.session.add(new_allievo)
         db.session.commit()
-        flash("aggiunta dell'utente andato a buon fine!")
+        flash("aggiunta dell'utente andato a buon fine!", category='success')
         return redirect(url_for('dashboard.home',name = admin_name)) 
     else:
         return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
@@ -321,8 +321,8 @@ def modify_student():
                 count += 1
     
         if count < int(numero_allenamenti):
-                flash("il numero di slot inseriti non soddisfa il numero di allenamenti a settimana dell'allievo")
-                return render_template("modificaallievo.html", user=current_user, calendar_list = calendar_list)
+                flash(f"il numero di slot inseriti {count} non soddisfa il numero di allenamenti a settimana dell'allievo: {numero_allenamenti}", category='error')
+                redirect(url_for('dashboard.modify_student'))
         
         print("è andato tutto bene")
         # devo mettere in una stringa gli slot disponibili perchè il campo sloteliminati della tabella calendario accetta stringhe e non liste
@@ -335,6 +335,5 @@ def modify_student():
         actual_student.slotdisponibilita = slotDisponibili[:-1]
 
         return render_template("modificaallievo.html", user = current_user, student_list = student_list, calendar_list = calendar_list)
-        
     else:
         return render_template("modificaallievo.html", user = current_user, student_list = student_list, calendar_list = calendar_list)
