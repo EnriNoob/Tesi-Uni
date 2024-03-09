@@ -2,17 +2,32 @@
 {% block title %} opti {% endblock %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='styles/modifyCalendar.css') }}">
-<h1>Modifica calendario !</h1>
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/dashOpti.css') }}">
+<h1>Assegnamento automatico degli allenamenti !</h1>
+{% if not calendar_list %}
+<h1>non c'è nessun calendario...</h1>
+<div class="add-calendar">
+    <a href="/home/ccalendar">
+        <button>Aggiungi un calendario!</button>
+    </a>
+</div>
+{% elif not students_list %}
+<h1>non c'è nessun allievo...</h1>
+<div class="add-student">
+    <a href="/home/aggiungi">
+        <button>Aggiungi un allievo!</button>
+    </a>
+</div>
+{% else%}
 <h1>seleziona calendario</h1>
 <div class="calendar-list" id = "calendar-list">
     <table id="table-calendars">
         <tr>
             <th>seleziona</th>
-            <th>Id</th>
+            <th>ID</th>
             <th>Ora inizio</th>
             <th>Ora fine</th>
-            <th>Minuti degli slot</th>
+            <th>Minuti slot</th>
             <th>Slot non disponibili</th>
         </tr>
     {% for cal in calendar_list%}
@@ -29,4 +44,5 @@
     {% endfor %}
     </table>
 </div>
+{% endif %}
 {% endblock %}

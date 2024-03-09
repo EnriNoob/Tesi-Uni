@@ -1,3 +1,19 @@
+.add-calendar{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.add-calendar button{
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+
+}
+.add-calendar button:hover{
+    background-color: red;  
+}
+
 #adduser{
     display: flex;
     flex-direction: column;
@@ -21,7 +37,6 @@
     border: 1px solid black;
     border-radius: 0.25rem;
     width: fit-content;
-    border-radius: 20px;
     margin: 10px;
     padding : 10px
     
@@ -41,8 +56,6 @@
     background-color: white;
     border: 1px solid black;
     border-radius: 0.25rem;
-    border-top-left-radius: 20px;
-    border-top-right-radius: 20px;
     margin: 10px;
     padding: 10px;
 }

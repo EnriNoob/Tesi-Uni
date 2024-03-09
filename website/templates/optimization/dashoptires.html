@@ -1,0 +1,44 @@
+{% extends "dashopti.html"%}
+{% block title %} suka {% endblock %}
+
+{% block res %}
+<link rel="stylesheet" href="{{ url_for('static', filename='styles/dashOpti.css') }}">
+<div class="res" id = "res">
+    <table id="table-res">
+        <tr>
+            <th>Lunedì</th>
+            <th>Martedì</th>
+            <th>Mercoledì</th>
+            <th>Giovedì</th>
+            <th>Venerdì</th>
+            <th>Sabato</th>
+        </tr>
+        {% for row in range(numeroslot)%}
+            <tr>
+            {% for col in range(6)%}
+                <td>
+                {% set alunno = (risultato[row][col]).split("/") %}
+                {% for a in alunno%}
+                    {{a}} <br>
+                {% endfor %}
+                </td>
+            {% endfor %}    
+            </tr>
+        {% endfor %}
+    </table>
+
+    <ul>
+        <h1>Alunni che sono stati soddisfatti</h1>
+        {% for allievo in satisfied_student %}
+          <li>id_{{allievo.id}} {{allievo.nome}} della categoria {{allievo.livello}} è stato soddifatto</li>
+        {% endfor %}
+    </ul>
+    <ul>
+        <h1>Alunni che non sono stati soddisfatti</h1>
+        {% for allievo in unsatisfied_student %}
+        <li>id_{{allievo.id}} {{allievo.nome}} della categoria {{allievo.livello}} non è stato soddifatto</li>
+        {% endfor %}
+    </ul>
+        
+</div>
+{% endblock res %}

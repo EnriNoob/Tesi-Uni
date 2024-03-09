@@ -333,6 +333,7 @@ def modify_student():
 
         actual_student = Allievo.query.filter_by(id=id_allievo).first()
         actual_student.slotdisponibilita = slotDisponibili[:-1]
+        db.session.commit()
 
         return render_template("modificaallievo.html", user = current_user, student_list = student_list, calendar_list = calendar_list)
     else:

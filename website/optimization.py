@@ -7,10 +7,11 @@ from sqlalchemy import false, true
 
 
 from . import db
-from .models import Allievo
+from .models import Allievo as Al
 from .models import Calendario
 import numpy as np
 from pulp import *
+import json
 
 # stampa gli allievi delle categorie
 def stampa_allievi(array,categories):
@@ -74,22 +75,22 @@ def receive_boh(array1,array2,j,k):
         
     return 0
 
-
 optimization = Blueprint('optimization',__name__,template_folder="templates/optimization")
 @optimization.route('/', methods = ['GET', 'POST'])
 @login_required
 def opti():
+    students_list = Al.query.all()
     calendar_list = Calendario.query.all()
-
     if request.method == 'POST':
         # mi prendo l'id del calendario selezionato dall'admin dalla pagina
         # in seguito mi prendro il calendario giusto
         # poi mi prendo gli allievi associati a quel calendario
         idcal = request.form.get("idcal")
         print(idcal)
-
+        alunni_soddisfatti = []
+        alunni_insoddisfatti = []
         calendario = Calendario.query.filter_by(id = idcal).first()
-        alunni_del_calendario = Allievo.query.filter_by(id_calendario = calendario.id).all()
+        alunni_del_calendario = Al.query.filter_by(id_calendario = calendario.id).all()
         # dati del calendario
         sl = calendario.sloteliminati
         ora_inizio = calendario.oremattina
@@ -325,9 +326,11 @@ def opti():
                
                     if somma != (numeri_allenamenti_a_settimana[c][i]):
                         print(f"studente{i + 1} della categoria {categories[c]} rimarrà insodisfatto")
-                        unsatified += 1
-                        Campi[c,i,:,k:] = 0
+                        alunni_insoddisfatti.append(Al.query.filter_by(id = id_allievi_per_categoria[c][i]).first())
+                        Campi[c,i,:,:] = 0
 
+        all_info = [["" for i in range(6)] for k in range(numeri_slot)]
+        
         for c,cat in enumerate(Campi):
             for i,allievi in enumerate(cat):
                 print(f"studente{i + 1} della categoria {categories[c]}")
@@ -340,61 +343,30 @@ def opti():
                     
                     if somma == (numeri_allenamenti_a_settimana[c][i]): 
                         print(f"studente{i + 1} della categoria {categories[c]} è stato soddisfatto")
+                        temp = Al.query.filter_by(id = id_allievi_per_categoria[c][i]).first()
+
+                        alunni_soddisfatti.append(temp)
                     else:
                         print(f"studente{i + 1} della categoria {categories[c]} rimarrà insodisfatto")
+                        if not (Al.query.filter_by(id = id_allievi_per_categoria[c][i]).first() in alunni_insoddisfatti):
+                            alunni_insoddisfatti.append(Al.query.filter_by(id = id_allievi_per_categoria[c][i]).first())
                         Campi[c,i,:,:] = 0
-        '''
-        for day in range(6):
-            for slot in range(numeri_slot):
-                temp = []
-                for c, cat in enumerate(categories):
-                    for student in range(numeri_allievi_per_categoria[c]):
-
-                        #print(f"student {student} in range {numeri_allievi_per_categoria[cat]}")
-                        #print(day,slot,student,f"valore slot {Allievi[cat,student,day,slot]}")
-                        if(Campi[c,student,day,slot] == 1):
-                            #print(cat,student,day,slot)
-                            students_one.append(receive_student_decision_variables(students_decision_variables,c,student,day,slot))
-
-                if students_one:
-                    print(students_one)
-                    if len(students_one) > 4 :
-                        print("DIOOOOOOMEEEEEERDDDDDDAAAAAAAAAAAA")
-                students_one.clear()
-                        
         
-        if unsatified == 0:
-            print("nessuno è rimasto insodisfatto")
-        
-        c_chosen = []
-
-        for v in problem.variables():
-            if "c" in v.name and v.varValue == 1:
-                c_chosen.append(f"{v.name}_{categorie_segnaposto[v.name]}")
-                #print(v.name, "=", v.varValue)
-        for i in c_chosen:
-            print (i)
-            
-
         for c,cat in enumerate(Campi):
             for i,allievi in enumerate(cat):
                 print(f"studente{i + 1} della categoria {categories[c]}")
-                if i < (len(numeri_allenamenti_a_settimana[c])):
-                    somma = 0
+                if i < (numeri_allievi_per_categoria[c]):
                     for j,giorni in enumerate(allievi):
                         for k,slots in enumerate(giorni):
-                            if Campi[c,i,j,k] == 1:      
-                                print("prima", categories[c])
-                                if receive_boh(c_chosen,j,k) == categories[c]:
-                                    somma += 1
-        
-                    if somma != (numeri_allenamenti_a_settimana[c][i]):
-                        print(f"studente{i + 1} della categoria {categories[c]} rimarrà insodisfatto")
-                        Campi[c,i,:,:] = 0
-        
-        #print_comparison_3d_array(Allievi,Campi,numeri_allenamenti_a_settimana,id_allievi_per_categoria,categories)
-        '''
-        return "guarda terminale"
+                            if Campi[c,i,j,k] == 1 and categories[c] == receive_boh(categorie_segnaposto,store_c,j,k):
+                                temp = Al.query.filter_by(id = id_allievi_per_categoria[c][i]).first()
+                                all_info[k][j] += f"{categories[c]}_{temp.nome}_{temp.cognome}/"
+                                
+        print_comparison_3d_array(Allievi,Campi,numeri_allenamenti_a_settimana,id_allievi_per_categoria,categories)
+        for row in all_info:
+            print(row)
+
+        return render_template("dashoptires.html", user = current_user, calendar_list = calendar_list, students_list = students_list,risultato = all_info, numeroslot=numeri_slot, satisfied_student = alunni_soddisfatti, unsatisfied_student = alunni_insoddisfatti,)
     else:
-        return render_template("dashopti.html", user = current_user, calendar_list= calendar_list)
+        return render_template("dashopti.html", user = current_user, calendar_list= calendar_list, students_list = students_list)
 

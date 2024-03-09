@@ -47,18 +47,19 @@ livello.addEventListener("input", function(){
 
     document.getElementById("calendar-list").style.display = "flex"
 
-    var calendars = document.getElementsByClassName("checkbox-calendar")
     var checkSlots = document.getElementsByClassName("check-slot")
     var input
 
-    for (let i = 0; i < 2; i++) {
+    console.log();
+
+    for (let i = 0; i < checkSlots.length; i++) {
         document.getElementById("tr" + (checkSlots[i].getAttribute("name")).slice(-1)).style.backgroundColor = "white"
         document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).disabled = false
         document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).checked = false 
    
     }
    
-    for (let i = 0; i < 2; i++) {
+    for (let i = 0; i < checkSlots.length; i++) {
         
         if (checkSlots[i].innerText != slot){
             document.getElementById((checkSlots[i].getAttribute("name")).slice(-1)).disabled = true

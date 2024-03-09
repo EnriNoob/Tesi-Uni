@@ -3,9 +3,9 @@
 
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/modifyStudent.css') }}">
-<h1>Modifica studente !</h1>
+<h1>Modifica allievo !</h1>
 {% if not student_list%}
-<h1>non c'è nessun allievo ancora</h1>
+<h1>non c'è nessun allievo ancora...</h1>
 <div class="add-student">
     <a href="aggiungi">
         <button>Aggiungi un allievo!</button>

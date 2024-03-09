@@ -1,8 +1,10 @@
 function close_popup(){
     document.getElementById("popup-content").style.visibility = "hidden"
+    document.getElementsByTagName("body")[0].style.overflow = "auto"
     
 }
 function generate_popup(checkbox_input){
+    document.getElementsByTagName("body")[0].style.overflow = "hidden"
     console.log(checkbox_input);
     id = checkbox_input.getAttribute("id");
     document.getElementById("popup-content").style.visibility = "visible"
@@ -36,8 +38,40 @@ function generate_popup(checkbox_input){
     document.getElementById("livello").value = livello
     document.getElementById("slotdisponibilita").setAttribute("value",slotdisponibilita)
     
+    uncheck_others_tr(id)
     put_slots(idcal)
 
+}
+
+function uncheck_others_tr(id) {
+    
+    checkboxes_list = document.getElementsByClassName("checkbox-calendar")
+    //console.log(checkboxes_list);
+    //console.log(typeof(checkboxes_list));
+    Array.from(checkboxes_list).forEach(function (element) {
+        console.log(element)
+        if (element.getAttribute("id") != id){
+            element.checked = false
+        }
+        else{
+            element.checked = true
+        }
+    });
+  
+    /*
+    tr_list.forEach(element => {
+        console.log(element);
+        
+        if (element.getAttribute("id") != trname){
+            element.checkecd = false
+        }
+        else{
+            element.checkecd = true
+        }
+        
+    });
+    */
+    
 }
 
 function put_slots(idcal){
@@ -145,7 +179,6 @@ function put_slots(idcal){
             document.getElementById(slotEliminatiArray[i]).disabled = true
         }
     } 
- 
 
 }
 

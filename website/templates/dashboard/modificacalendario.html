@@ -5,7 +5,12 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/modifyCalendar.css') }}">
 <h1>Modifica calendario !</h1>
 {% if not calendar_list%}
-<h1>non c'è nessun calendario ancora</h1>
+<h1>non c'è nessun calendario ancora...</h1>
+<div class="add-calendar">
+    <a href="ccalendar">
+        <button>vai ad aggiungere un calendario!</button>
+    </a>
+</div>
 {% else %}
 <div class="calendar-list" id = "calendar-list">
     <table id="table-calendars">

@@ -4,6 +4,15 @@
 {% block content %}
 <link rel="stylesheet" href="{{ url_for('static', filename='styles/addUserStyle.css') }}">
 <h1>Aggiungi allievo!</h1>
+{% if not calendar_list %}
+<h1>non c'è nessun calendario...</h1>
+<div class="add-calendar">
+    <a href="ccalendar">
+        <button>Aggiungi un calendario!</button>
+    </a>
+</div>
+
+{% else %}
 <form id="adduser" method="post">
 <div class="main-div">
     <div class="left">
@@ -261,8 +270,6 @@
     </div>
 </div>
 <div >
-
-
 <div class="insert-availability" id="insert-availability">
 </div>
 <div class="submit" id="submit" style="display: none;">
@@ -273,4 +280,5 @@
 
 </form>
 <script src="{{ url_for('static', filename='scripts/addUserHandler.js')}}"></script>
+{% endif %}
 {% endblock %}
