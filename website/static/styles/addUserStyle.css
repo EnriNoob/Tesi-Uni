@@ -81,8 +81,24 @@
 .calendar-list #table-calendars td:last-child{
     border-bottom-right-radius: 0.25rem;
 }
+#insert-availability{
+    visibility: hidden;
+    border: 1px solid black;
+    border-radius: 0.25rem;
+    padding:10px;
+}
+#insert-availability td{
+    text-align: center;
 
-
+}
+.submit{
+    visibility: hidden;
+    margin-top: 10px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
 
 
 

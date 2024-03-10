@@ -37,8 +37,11 @@
 {% endif %}
 <form method="post">
     
-    
     <div class="form-main" id="form-main" style="visibility: hidden;">
+        <div class="form-elements">
+            <p style="color: red;">
+            puoi modificare soltanto l'ora d'inizio e l'ora di fine !</p>
+        </div>
         <div class="form-elements">
             <label for="">Id calendario selezionato</label>
             <input type="text" id="textid" name="textid" readonly>
@@ -66,7 +69,6 @@
         </div>
     </div>
     <div class="calendar" id="calendar"></div>
-    
 
 </form>
 

@@ -27,14 +27,12 @@
     justify-content: center;
     align-items: center;
 }
-.form-container{
+.form-main{
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: flex-start;
     background-color: white;
-    border: 1px solid black;
-    border-radius: 0.25rem;
     width: fit-content;
     border-radius: 20px;
     margin: 10px;
@@ -66,14 +64,14 @@
     margin: 10px;
 }
 .calendar-list #table-calendars th{
-    text-align: left;
+    text-align: center;
     margin-left: 1px;
     border: 1px solid black;
     padding:5px
 }
 
 .calendar-list #table-calendars td{
-    text-align: left;
+    text-align: center;
     border: 1px solid black;
     padding:5px
 }
@@ -101,6 +99,22 @@ input[type="checkbox"]:checked:after {
     /* Heres your symbol replacement */
     content: "";
     color: #fff;
+}
+
+
+#calendar{
+    visibility: hidden;
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 0.25rem;;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+#calendar td{
+    text-align: center;
 }
 
 

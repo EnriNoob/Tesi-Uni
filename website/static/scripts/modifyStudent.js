@@ -39,7 +39,7 @@ function generate_popup(checkbox_input){
     document.getElementById("slotdisponibilita").setAttribute("value",slotdisponibilita)
     
     uncheck_others_tr(id)
-    put_slots(idcal)
+    put_slots(idcal,slotdisponibilita)
 
 }
 
@@ -56,30 +56,14 @@ function uncheck_others_tr(id) {
         else{
             element.checked = true
         }
-    });
-  
-    /*
-    tr_list.forEach(element => {
-        console.log(element);
-        
-        if (element.getAttribute("id") != trname){
-            element.checkecd = false
-        }
-        else{
-            element.checkecd = true
-        }
-        
-    });
-    */
-    
+    }); 
 }
 
-function put_slots(idcal){
+function put_slots(idcal,slotdisponibilita){
     rows = document.getElementById("table-calendars").rows
     right_row = rows["tr" + idcal]
     console.log(right_row);
     
-
     const giorni = ["H","L","M","M","G","V","S"]
     var div = document.getElementById("calendar")
     
@@ -95,6 +79,8 @@ function put_slots(idcal){
     }else{
         var slotEliminatiArray = slotE.split(",")
     }
+
+    var disp = slotdisponibilita.split(",")
     
     console.log(slotEliminatiArray);
 
@@ -167,10 +153,17 @@ function put_slots(idcal){
             }
         }
     }
+    text = document.createElement("p")
+    text.innerHTML = "puoi modificare gli slot"
+    text.style.color = "red"
+    text.style.float = "center"
+    div.append(text)
     div.appendChild(table)
     submit = document.createElement("input")
     submit.setAttribute("type","submit")
     submit.setAttribute("id","submit")
+    submit.setAttribute("value","modifica")
+    submit.style.margin = "10px 0 0 0"
     div.appendChild(submit)
 
     console.log(slotEliminatiArray.length);
@@ -179,6 +172,9 @@ function put_slots(idcal){
             document.getElementById(slotEliminatiArray[i]).disabled = true
         }
     } 
+    for(let x = 0; x < disp.length; x++){
+        document.getElementById(disp[x]).checked = true
+    }
 
 }
 

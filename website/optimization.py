@@ -1,17 +1,12 @@
 
-from flask import Blueprint, render_template, request, redirect, url_for
+from flask import Blueprint, flash, render_template, request, redirect, url_for
 from flask_login import login_user, login_required, logout_user, current_user
-from sqlalchemy import false, true
-
-
-
 
 from . import db
 from .models import Allievo as Al
 from .models import Calendario
 import numpy as np
 from pulp import *
-import json
 
 # stampa gli allievi delle categorie
 def stampa_allievi(array,categories):
@@ -91,6 +86,12 @@ def opti():
         alunni_insoddisfatti = []
         calendario = Calendario.query.filter_by(id = idcal).first()
         alunni_del_calendario = Al.query.filter_by(id_calendario = calendario.id).all()
+
+        # se non ci sono alunni associati ad un calendario non devo fare girare l'algoritmo
+        if len(alunni_del_calendario) == 0:
+            flash("non ci sono allievi associati a questo calendario", category="error")
+            return render_template("dashopti.html", user = current_user, calendar_list= calendar_list, students_list = students_list)
+        
         # dati del calendario
         sl = calendario.sloteliminati
         ora_inizio = calendario.oremattina
@@ -333,8 +334,8 @@ def opti():
         
         for c,cat in enumerate(Campi):
             for i,allievi in enumerate(cat):
-                print(f"studente{i + 1} della categoria {categories[c]}")
                 if i < (numeri_allievi_per_categoria[c]):
+                    print(f"studente{i + 1} della categoria {categories[c]}")
                     somma = 0
                     for j,giorni in enumerate(allievi):
                         for k,slots in enumerate(giorni):
@@ -354,7 +355,6 @@ def opti():
         
         for c,cat in enumerate(Campi):
             for i,allievi in enumerate(cat):
-                print(f"studente{i + 1} della categoria {categories[c]}")
                 if i < (numeri_allievi_per_categoria[c]):
                     for j,giorni in enumerate(allievi):
                         for k,slots in enumerate(giorni):
@@ -366,6 +366,7 @@ def opti():
         for row in all_info:
             print(row)
 
+        flash("creazione del calendario in modo automatico, avvenuto con successo",category="success")
         return render_template("dashoptires.html", user = current_user, calendar_list = calendar_list, students_list = students_list,risultato = all_info, numeroslot=numeri_slot, satisfied_student = alunni_soddisfatti, unsatisfied_student = alunni_insoddisfatti,)
     else:
         return render_template("dashopti.html", user = current_user, calendar_list= calendar_list, students_list = students_list)

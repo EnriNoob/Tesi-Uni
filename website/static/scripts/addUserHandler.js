@@ -34,7 +34,9 @@ year.addEventListener("input", function(){
         }
     }
 })
+
 livello.addEventListener("input", function(){
+    document.getElementById("insert-availability").style.visibility = "visible"
     liv = document.getElementById("livello").value
     var slot = 0
     console.log(liv);
@@ -78,7 +80,7 @@ livello.addEventListener("input", function(){
 
 
 function insert_availability(trname){
-    document.getElementById("submit").style.display = "flex"
+    document.getElementById("submit").style.visibility = "visible"
     rows = document.getElementById("table-calendars").rows;
     var right_row = rows[trname]
 
@@ -162,6 +164,11 @@ function insert_availability(trname){
             }
         }
     }
+    text = document.createElement("p")
+    text.innerHTML = "aggiungi le tue disponibilità"
+    text.style.color = "red"
+    text.style.float = "center"
+    div.appendChild(text)
     div.appendChild(table)
     document.getElementById("idcalendar").value = idCalendar
     

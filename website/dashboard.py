@@ -66,32 +66,7 @@ def create_calendar():
             buckets_days[int(split[1])].append(split[0])
 
         print(buckets_days)
-        '''
-        for d,day in enumerate(buckets_days):
-            # controlliamo se l'utente in un giorno abbia eliminato uno solo slot
-            if len(day) == 1:
-                flash(f'attenzione, hai escluso nel giorno{day} un solo slot!')
-                return render_template("ccalendar.html", user=current_user)
-            # se no dobbiamo controllare che abbia eliminato uno solo slot in un giorno con più slot eliminati
-            else:
-                # scorriamo nei slot eliminati nei vari giorni
-                for x,slot in enumerate(day) :
-                    # caso in cui si parte dal primo slot eliminato nella lista (si controlla soltanto lo slot successivo)
-                    if x == 0:
-                        if int(day[x + 1]) - int(slot) != 1:
-                            flash(f'attenzione, hai escluso nel giorno{d}={day} uno slot da mezz\'ora da solo! ovvero{slot}')
-                            return render_template("ccalendar.html", user=current_user)
-                    # caso in cui si arriva all'ultimo slot eliminato nella lista (si controlla soltatno lo slot precedente)
-                    elif x == len(day) - 1:
-                        if int(slot) - int(day[x - 1]) != 1:
-                            flash(f'attenzione, hai escluso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
-                            return render_template("ccalendar.html", user=current_user)
-                    # caso in cui si va controllare per ogni slot eliminato quello precedente e quello successivo
-                    # se la distanza di hamming non è 1 in entrambi i casi significa che la distanza tra lo slot e quello successivo o quello precedente non è 1    
-                    elif (int(day[x + 1]) - int(slot)) != 1 and (int(slot) - int(day[x - 1])) != 1:
-                            flash(f'attenzione, hai escluso nel giorno{day} uno slot da mezz\'ora da solo! ovvero{slot}')
-                            return render_template("ccalendar.html", user=current_user)
-        '''             
+           
         print("è andato tutto bene")
         sloteliminati = ""
         print(buckets_days)
@@ -112,8 +87,12 @@ def create_calendar():
         if len(calendar_list) == 2:
             flash("ci sono già i due calendari con slot da 60 e 90 minuti", category='error')
             return redirect(url_for('dashboard.home',name = admin_name)) 
+        elif len(calendar_list) == 1:
+            slot = int(calendar_list[0].numeroslot)
+            return render_template("ccalendar.html", user=current_user, slot = slot)
+            pass
         else:
-            return render_template("ccalendar.html", user=current_user)
+            return render_template("ccalendar.html", user=current_user, slot = 0)
 
 @dashboard.route('/modificacalendario', methods=['GET', 'POST'])
 @login_required
@@ -143,10 +122,9 @@ def modify_calendar():
         for check in sus:
             # spezzo es. '0-1'
             split = check.rsplit('-')
-            buckets_days[int(split[1])].append(split[0])
+            buckets_days[int(split[0])].append(split[1])
 
         print(buckets_days)
-
         sloteliminati = ""
         print(buckets_days)
         # devo mettere in una stringa gli slot eliminati perchè il campo sloteliminati della tabella calendario accetta stringhe e non liste
@@ -157,11 +135,18 @@ def modify_calendar():
         actual_calendar = Calendario.query.filter_by(id=idcal).first()
         actual_calendar.oremattina = str(orainizio)
         actual_calendar.orepomeriggio = str(orafine)
-
         actual_calendar.sloteliminati = sloteliminati[:-1]
-        
         db.session.commit()
-        return render_template("modificacalendario.html", user=current_user,calendar_list = calendar_list)
+
+        student_list = Allievo.query.filter_by(id_calendario = idcal).all()
+
+        for stu in student_list:
+            stu.slotdisponibilita = ""
+
+        db.session.commit()
+        new_calendar_list = Calendario.query.all()
+        flash(f"modifica del calendario con id:{idcal} avvenuta con successo", category="success")
+        return render_template("modificacalendario.html", user=current_user,calendar_list = new_calendar_list)
     else:
         return render_template("modificacalendario.html", user=current_user,calendar_list = calendar_list)
 
@@ -186,9 +171,18 @@ def create_user():
         print(nome,cognome,giorno_nascita,mese_nascita, anno_nascita, genere, livello, numero_allenamenti, id_calendario, d)
 
         # controllo se l'utente non abbia inserito nome o cognome
-        if nome == "" or cognome == "" or giorno_nascita == '-' or mese_nascita == '-' or anno_nascita == '-' or genere == '-' or livello == '-' or numero_allenamenti == '-' or id_calendario == '-':
+        if nome == "" or cognome == "":
             flash("non hai inserito nome oppure cognome", category='error')
             return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+        
+        if giorno_nascita == None or mese_nascita == None or anno_nascita == None:
+            flash("non hai inserito il giorno o mese o anno di nascita", category='error')
+            return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+        
+        if genere == None or numero_allenamenti == None:
+            flash("non hai genere o livello o numero di allenamenti", category='error')
+            return render_template("aggiungi.html", user=current_user, calendar_list = calendar_list)
+    
         # data di oggi
         struct_time_oggi = date.today().timetuple()
 
@@ -295,15 +289,27 @@ def modify_student():
     calendar_list = Calendario.query.all()
     student_list =  Allievo.query.all()
     if request.method == 'POST':
+
         nome = request.form.get("nome")
-        print(nome)
         cognome = request.form.get("cognome")
-        print(cognome)
-        #livello = request.form.get("livello")
         numero_allenamenti = request.form.get("allenamenti")
-        print(numero_allenamenti)
-        id_allievo = request.form.get("idallievo")
+        id_allievo = request.form.get("idallievo")   
         d = request.form.getlist("check")
+        elimina = request.form.get("elimina")
+
+        print(f"id_allievo {id_allievo}")
+        print(nome)
+        print(cognome)
+        print(numero_allenamenti)
+        # se l'admin ha selezionato nel checkbox di eliminare l'allievo elimina sarà on 
+        if elimina == "on":
+            temp = Allievo.query.filter_by(id = id_allievo).first()
+            # devo toglierlo dalla lista perchè in student_list l'allievo da eliminare è ancora presente e verrà passato nel render template
+            student_list.remove(temp)
+            db.session.delete(temp)
+            db.session.commit()
+            flash(f"eliminazione dell'allievo {nome} {cognome} con id {id_allievo} avvenuto con sucesso",category="success")
+            return render_template("modificaallievo.html", user = current_user, student_list = student_list, calendar_list = calendar_list)
 
         slotDisponibili = ""
         buckets_days = [[] for x in range (6)]
@@ -334,7 +340,7 @@ def modify_student():
         actual_student = Allievo.query.filter_by(id=id_allievo).first()
         actual_student.slotdisponibilita = slotDisponibili[:-1]
         db.session.commit()
-
+        flash(f"modifica all'allievo {nome} {cognome} con id {id_allievo} avvenuto con successo",category="success")
         return render_template("modificaallievo.html", user = current_user, student_list = student_list, calendar_list = calendar_list)
     else:
         return render_template("modificaallievo.html", user = current_user, student_list = student_list, calendar_list = calendar_list)

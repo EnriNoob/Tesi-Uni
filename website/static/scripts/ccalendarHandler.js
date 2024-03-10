@@ -35,7 +35,7 @@ function generateCalendar(){
     //controlliamo se gli orari messi dell'utente riescono ad essere divisibili senza resto dai minuti dagli slot inseriti
     if ((secondi_giorno % (slot * 60)) != 0) {
         console.log("non si può slottare");
-        alert("Ciao hai messo gli slot con minutaggio spastico!!");
+        alert("dall'ora di inizio all'ora di fine non si può slottare equamente!");
     }
     else{
         div.innerHTML = ""
@@ -90,12 +90,15 @@ function generateCalendar(){
         }
         formSubmit = document.createElement("input")
         formSubmit.setAttribute("type", "submit")
-        formSubmit.setAttribute("onclick","checkSingleSlot()")
+        formSubmit.setAttribute("value", "inserisci calendario")
         formSubmit.style.display= "center"
+        text = document.createElement("p")
+        text.innerHTML = "puoi eliminare degli slot"
+        text.style.color = "red"
+        text.style.float = "center"
+        div.appendChild(text)
         div.appendChild(table)
         div.appendChild(formSubmit)
+        document.getElementById("calendar").style.visibility = "visible"
     } 
-}
-function checkSingleSlot(){
-    console.log("fgjnihwghiwe");
 }

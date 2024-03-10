@@ -16,11 +16,21 @@
                 <input type="time" list="times" id="orafine" name="orafine">
             </div>
             <div class="form-elements">
-                <label for="tiposlot">minutaggio degli slot</label>
+                <label for="tiposlot">Minutaggio degli slot</label>
                 <select name="tiposlot" id="tiposlot">
                     <option disabled selected value>-</option>
-                    <option value="60">1 ORA</option>
-                    <option value="90">1 ORA E MEZZA</option>
+                    {% if slot %}
+                        {% if slot == 60 %}
+                        <option value="60" disabled>1 ORA</option>
+                        <option value="90">1 ORA E MEZZA</option>
+                        {% else %}
+                        <option value="60">1 ORA</option>
+                        <option value="90" disabled>1 ORA E MEZZA</option>
+                        {% endif %}
+                    {% else %}
+                        <option value="60">1 ORA</option>
+                        <option value="90">1 ORA E MEZZA</option>
+                    {% endif %}
                 </select>
             </div>
             <div class="generateCalendar">

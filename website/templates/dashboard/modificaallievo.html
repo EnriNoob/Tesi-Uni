@@ -86,7 +86,7 @@
                         <input type="text" name="allenamenti" id="allenamenti">
                         
                         <label>livello dell'atleta</label>
-                        <select name="livello" id="livello">
+                        <select name="livello" id="livello" aria-readonly="true">
                             <option disabled selected value="-">-</option>
                             <option value ="I love tennis">I love tennis</option>
                             <option value ="sat under 8">sat under 8</option>
@@ -113,6 +113,10 @@
                         <label for="slotdisponibilita">slot disponibilità</label>
                         <input type="text" name="slotdisponibilita" id="slotdisponibilita" readonly>
                     </div>
+                    <div class="form-elements">
+                        <label for="elimina"> eliminare studente?</label>
+                        <input id="elimina" name="elimina" type="checkbox">
+                    </div>
                 </div> 
                
             </div>
@@ -134,13 +138,12 @@
                         <td>{{cal.orepomeriggio}}</td>
                         <td class = "check-slot" id="cs{{cal.id}}" name="cs{{cal.id}}">{{cal.numeroslot}}</td>
                         <td>{{cal.sloteliminati}}</td>
+                        
                     </tr>
                 {% endfor %}
                 </table>
-                <div class="calendar" id="calendar"></div>
             </div>
-            
-            
+            <div class="calendar" id="calendar"></div> 
         </form>
     </div>
 </div>

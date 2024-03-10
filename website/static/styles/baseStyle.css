@@ -23,6 +23,8 @@ body {
     display: flex;
     align-items: center;
     flex-direction: row;
+    margin-top: 10px;
+    margin-left: 10px;
 
 }
 .alert-success button{
@@ -35,6 +37,8 @@ body {
     display: flex;
     align-items: center;
     flex-direction: row;
+    margin-top: 10px;
+    margin-left: 10px;
 
 }
 .alert-danger button{
